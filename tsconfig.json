@@ -1,0 +1,20 @@
+
+{
+    "compilerOptions": {
+        "noEmitOnError": true,
+        "noEmitHelpers": true,
+        "sourceMap": false,
+        "noLib": true,
+        "removeComments": true,
+        "declaration": false,
+        "experimentalDecorators": true,
+        "target": "es5",
+        "module": "commonjs",
+        "outDir": "bin/dist"
+    }, 
+    "exclude": [
+        "node_modules", 
+        "demo", 
+        "bin"
+    ]
+}

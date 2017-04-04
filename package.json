@@ -1,0 +1,48 @@
+{
+  "name": "nativescript-image-swipe",
+  "version": "1.0.0",
+  "description": "A widget to easily swipe and zoom through images",
+  "main": "image-swipe",
+  "typings": "image-swipe.d.ts",
+  "nativescript": {
+    "platforms": {
+      "ios": "2.5.0",
+      "android": "2.5.0"
+    }
+  },
+ "plugin": {
+      "nan": "false",
+      "pan": "true",
+      "core3": "false",
+      "category": "Interface"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PeterStaev/nativescript-image-swipe"
+  },
+
+  "keywords": [
+    "NativeScript",
+    "zoom",
+    "whitebox",
+    "swipe",
+    "photo",
+    "image",
+    "tangra"
+  ],
+  "author": "Peter Staev <peter@tangrasoft.com>",
+  "license": "Apache-2.0",
+
+  "devDependencies": {
+    "typescript": "~2.1.6",
+    "tslint": "^4.5.1",
+    "tns-core-modules": "2.5.2",
+    "tns-platform-declarations": "2.5.2",
+
+    "grunt": "1.0.1",
+    "grunt-contrib-copy": "1.0.0",
+    "grunt-contrib-clean": "1.0.0",
+    "grunt-exec": "2.0.0"
+  }
+
+}
