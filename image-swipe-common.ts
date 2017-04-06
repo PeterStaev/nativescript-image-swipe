@@ -1,27 +1,27 @@
-import { EventData, Observable } from "data/observable";
+import { EventData } from "data/observable";
 import { Property, PropertyChangeData, PropertyMetadataSettings } from "ui/core/dependency-observable";
 import { PropertyMetadata } from "ui/core/proxy";
-import { View } from "ui/core/view";
+// import { View } from "ui/core/view";
 import { Cache } from "ui/image-cache";
 import { ScrollView } from "ui/scroll-view";
 
-const ITEMSCHANGED = "_itemsChanged";
+// const ITEMSCHANGED = "_itemsChanged";
 const IMAGESCROLLER = "ImageScroller";
-const CHANGE = "change";
+// const CHANGE = "change";
 
 function onItemsPropertyChanged(data: PropertyChangeData) {
-    const imageScroller = data.object as ImageSwipeBase;
-    const itemsChanged = imageScroller[ITEMSCHANGED];
+    const imageSwipe = data.object as ImageSwipeBase;
+    // const itemsChanged = imageSwipe[ITEMSCHANGED];
 
-    if (data.oldValue instanceof Observable) {
-        (data.oldValue as Observable).off(CHANGE, itemsChanged);
-    }
+    // if (data.oldValue instanceof Observable) {
+    //     (data.oldValue as Observable).off(CHANGE, itemsChanged);
+    // }
 
-    if (data.newValue instanceof Observable) {
-        (data.newValue as Observable).on(CHANGE, itemsChanged);
-    }
+    // if (data.newValue instanceof Observable) {
+    //     (data.newValue as Observable).on(CHANGE, itemsChanged);
+    // }
 
-    imageScroller.refresh();
+    imageSwipe.refresh();
 }
 
 function onPagePropertyChanged(data: PropertyChangeData) {
@@ -72,7 +72,7 @@ export abstract class ImageSwipeBase extends ScrollView {
         )
     );
 
-    protected _imageCache: Cache;
+    public static _imageCache: Cache;
     // private _itemsChanged: (args: EventData) => void;
 
     get items(): any {
@@ -96,15 +96,13 @@ export abstract class ImageSwipeBase extends ScrollView {
         this._setValue(ImageSwipeBase.pageNumberProperty, value);
     }
 
-    get imageCache(): Cache {
-        return this._imageCache;
-    }
-
     constructor() {
         super();
         // this._itemsChanged = (args: EventData) => { this.refresh(); };
-        this._imageCache = new Cache();
-        this._imageCache.maxRequests = 3;
+        if (!ImageSwipeBase._imageCache) {
+            ImageSwipeBase._imageCache = new Cache();
+            ImageSwipeBase._imageCache.maxRequests = 3;
+        }    
     }
 
     public abstract refresh();

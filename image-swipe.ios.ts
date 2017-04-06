@@ -1,5 +1,3 @@
-// import observableArray = require("data/observable-array");
-// import view = require("ui/core/view");
 import * as utils from "utils/utils";
 import common = require("./image-swipe-common");
 
@@ -18,15 +16,15 @@ class UIScrollViewPagedDelegate extends NSObject implements UIScrollViewDelegate
     private _owner: WeakRef<ImageSwipe>;
 
     public scrollViewDidScroll(scrollView: UIScrollView) {
-        const pageWidth = scrollView.frame.size.width;
-        const owner = this._owner.get();
-
-        owner.isScrollingIn = true;
-        owner.pageNumber = Math.floor(Math.abs(scrollView.contentOffset.x) / pageWidth);
+        this._owner.get().isScrollingIn = true;
     }
 
     public scrollViewDidEndDecelerating(scrollView: UIScrollView) {
-        this._owner.get().isScrollingIn = false;
+        const pageWidth = scrollView.frame.size.width;
+        const owner = this._owner.get();
+
+        owner.isScrollingIn = false;
+        owner.pageNumber = Math.floor(Math.abs(scrollView.contentOffset.x) / pageWidth);
     }
 
 }
@@ -34,19 +32,26 @@ class UIScrollViewPagedDelegate extends NSObject implements UIScrollViewDelegate
 class UIScrollViewZoomDelegateImpl extends NSObject implements UIScrollViewDelegate {
     public static ObjCProtocols = [UIScrollViewDelegate];
 
-    public static initWithZoomView(zoomView: WeakRef<UIView>): UIScrollViewZoomDelegateImpl {
+    public static initWithOwnerAndZoomView(owner: WeakRef<ImageSwipe>, zoomView: WeakRef<UIImageView>): UIScrollViewZoomDelegateImpl {
         const delegate = UIScrollViewZoomDelegateImpl.new() as UIScrollViewZoomDelegateImpl;
 
         delegate._zoomView = zoomView;
+        delegate._owner = owner;
 
         return delegate;
     }
 
-    private _zoomView: WeakRef<UIView>;
+    private _zoomView: WeakRef<UIImageView>;
+    private _owner: WeakRef<ImageSwipe>;
 
     public viewForZoomingInScrollView(scrollView: UIScrollView) {
         return this._zoomView.get();
     }
+
+    public scrollViewDidZoom(scrollView: UIScrollView) {
+        this._owner.get()._centerImageView(this._zoomView.get());        
+    }
+    
 }
 
 export class ImageSwipe extends common.ImageSwipeBase {
@@ -63,10 +68,14 @@ export class ImageSwipe extends common.ImageSwipeBase {
 
     constructor() {
         super();
-        this._delegate = UIScrollViewPagedDelegate.initWithOwner(new WeakRef(this));
 
-        (this.ios as UIScrollView).pagingEnabled = true;
-        (this.ios as UIScrollView).autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
+        const scrollView: UIScrollView = this.ios as UIScrollView;
+        
+        this._delegate = UIScrollViewPagedDelegate.initWithOwner(new WeakRef(this));
+        this._views = [];
+
+        scrollView.pagingEnabled = true;
+        scrollView.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
     }
 
     public onLoaded() {
@@ -77,125 +86,61 @@ export class ImageSwipe extends common.ImageSwipeBase {
     public onUnloaded() {
         (this.ios as UIScrollView).delegate = null;
         this._purgeAllPages();
-
         super.onUnloaded();
     }
 
-    public onMeasure(widthMeasureSpec: number, heightMeasureSpec: number) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        const scrollView: UIScrollView = this.ios;
+    public onLayout(left: number, top: number, right: number, bottom: number) {
+        super.onLayout(left, top, right, bottom);
 
         if (this.items && this.items.length > 0) {
+            const scrollView: UIScrollView = this.ios;
+    
             this._calcScrollViewContentSize();
-            setTimeout(() => {
+
+            if (!this.isScrollingIn) {
                 scrollView.setContentOffsetAnimated(CGPointMake(this.pageNumber * this.getMeasuredWidth(), 0), false);
-                for (let loop = Math.max(0, this.pageNumber - 1); loop <= Math.min(this.pageNumber + 1, this.items.length - 1); loop++) {
-                    this._positionImageView(this._views[loop].imageView);
-                }
-            }, 150);
-        }
+            }
+
+            for (let loop = Math.max(0, this.pageNumber - 1); loop <= Math.min(this.pageNumber + 1, this.items.length - 1); loop++) {
+                this._resizeNativeViews(loop);
+                this._positionImageView(this._views[loop].imageView);
+            }
+        }        
     }
 
     public loadCurrentPage() {
         const scrollView: UIScrollView = this.ios;
         const pageWidth = scrollView.frame.size.width;
-        let loop;
 
         if (!this.isScrollingIn) {
             scrollView.contentOffset = CGPointMake(this.pageNumber * pageWidth, 0);
         }
 
-        for (loop = 0; loop < this.pageNumber - 1; loop++) {
+        for (let loop = 0; loop < this.pageNumber - 1; loop++) {
             this._purgePage(loop);
         }
-        for (; loop <= this.pageNumber + 1; loop++) {
-            this._loadPage(loop);
+        
+        // Load current page and one ahead one behind for cahing purposes
+        this._loadPage(this.pageNumber); // Always load the current page first
+        if (this.pageNumber - 1 >= 0) {
+            this._loadPage(this.pageNumber - 1);
         }
-        for (; loop < this.items.length; loop++) {
+        if (this.pageNumber + 1 < this.items.length) {
+            this._loadPage(this.pageNumber + 1);
+        }
+        
+        for (let loop = this.pageNumber + 2 ; loop < this.items.length; loop++) {
             this._purgePage(loop);
         }
     }
     
     public refresh() {
         this._purgeAllPages();
-        this._views = this.items.map((value) => null);
         this._calcScrollViewContentSize();
         this.loadCurrentPage();
     }
 
-    private _loadPage(page: number) {
-        if (page < 0 || page >= this.items.length) { // Outside Bounds
-            return;
-        }
-
-        if (this._views[page]) { // View already Loaded
-            return;
-        }
-
-        const scrollView: UIScrollView = this.ios;
-        const frame = scrollView.bounds;
-        const imageUrl = this._getDataItem(page)[this.imageUrlProperty];
-        let imageView: UIImageView;
-        let activityIndicator: UIActivityIndicatorView;
-        let view: UIView;
-        let zoomScrollView: UIScrollView;
-        let image;
-        
-        frame.origin = CGPointMake(frame.size.width * page, 0);
-
-        view = UIView.alloc().init();
-        view.frame = frame;
-        view.autoresizingMask = UIViewAutoresizing.FlexibleWidth
-            | UIViewAutoresizing.FlexibleHeight
-            | UIViewAutoresizing.FlexibleLeftMargin
-            | UIViewAutoresizing.FlexibleRightMargin;
-        view.backgroundColor = utils.ios.getter(UIColor, UIColor.blackColor);
-
-        zoomScrollView = UIScrollView.alloc().init();
-        zoomScrollView.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
-        zoomScrollView.maximumZoomScale = 1;
-        zoomScrollView.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
-
-        imageView = UIImageView.alloc().init();
-
-        zoomScrollView.delegate = UIScrollViewZoomDelegateImpl.initWithZoomView(new WeakRef(imageView));
-
-        activityIndicator = UIActivityIndicatorView.alloc().init();
-        activityIndicator.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
-        activityIndicator.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
-        activityIndicator.hidesWhenStopped = true;
-
-        zoomScrollView.addSubview(imageView);
-        view.addSubview(activityIndicator);
-        view.addSubview(zoomScrollView);
-
-        scrollView.addSubview(view);
-        this._views[page] = {
-            view,
-            imageView,
-            zoomDelegate: zoomScrollView.delegate as UIScrollViewZoomDelegateImpl
-        };
-        
-        activityIndicator.startAnimating();
-        image = this._imageCache.get(imageUrl);
-        if (image) {
-            this._prepareImageView(image, imageView);
-            activityIndicator.stopAnimating();
-        }
-        else {
-            this._imageCache.push({
-                key: imageUrl,
-                url: imageUrl,
-                completed: (imageSource) => {
-                    this._prepareImageView(imageSource, imageView);
-                    activityIndicator.stopAnimating();
-                }
-            });
-        }
-    }
-
-    private _centerImageView(imageView: UIImageView) {
+    public _centerImageView(imageView: UIImageView) {
         const boundSize = imageView.superview.bounds.size;
         const contentsFrame = imageView.frame;
         const newPosition: { x: number; y: number } = { x: 0, y: 0 };
@@ -217,6 +162,96 @@ export class ImageSwipe extends common.ImageSwipeBase {
         contentsFrame.origin = CGPointMake(newPosition.x, newPosition.y);
         imageView.frame = contentsFrame;
     }
+    
+    private _resizeNativeViews(page: number) {
+        if (page < 0 || page >= this.items.length) { // Outside Bounds
+            return;
+        }
+
+        if (!this._views[page]) {
+            return;
+        }
+
+        const scrollView: UIScrollView = this.ios;
+        const frame = scrollView.bounds;
+        const view = this._views[page].view;
+
+        frame.origin = CGPointMake(frame.size.width * page, 0);
+        view.frame = frame;
+
+        for (let loop = 0; loop < view.subviews.count; loop++) {
+            const subview = view.subviews.objectAtIndex(loop);
+            subview.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
+        }
+    }
+
+    private _loadPage(page: number) {
+        if (page < 0 || page >= this.items.length) { // Outside Bounds
+            return;
+        }
+
+        if (this._views[page]) { // View already Loaded
+            return;
+        }
+
+        const scrollView: UIScrollView = this.ios;
+        const imageUrl = this._getDataItem(page)[this.imageUrlProperty];
+        let imageView: UIImageView;
+        let activityIndicator: UIActivityIndicatorView;
+        let view: UIView;
+        let zoomScrollView: UIScrollView;
+        let image;
+
+        view = UIView.alloc().init();
+        view.autoresizingMask = UIViewAutoresizing.FlexibleWidth
+            | UIViewAutoresizing.FlexibleHeight
+            | UIViewAutoresizing.FlexibleLeftMargin
+            | UIViewAutoresizing.FlexibleRightMargin;
+        view.backgroundColor = utils.ios.getter(UIColor, UIColor.blackColor);
+
+        zoomScrollView = UIScrollView.alloc().init();
+        zoomScrollView.maximumZoomScale = 1;
+        zoomScrollView.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
+
+        imageView = UIImageView.alloc().init();
+
+        zoomScrollView.delegate = UIScrollViewZoomDelegateImpl.initWithOwnerAndZoomView(new WeakRef(this), new WeakRef(imageView));
+
+        activityIndicator = UIActivityIndicatorView.alloc().init();
+        activityIndicator.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
+        activityIndicator.hidesWhenStopped = true;
+
+        zoomScrollView.addSubview(imageView);
+        view.addSubview(activityIndicator);
+        view.addSubview(zoomScrollView);
+
+        scrollView.addSubview(view);
+        this._views[page] = {
+            view,
+            imageView,
+            zoomDelegate: zoomScrollView.delegate as UIScrollViewZoomDelegateImpl
+        };
+        
+        this._resizeNativeViews(page);
+
+        activityIndicator.startAnimating();
+
+        image = common.ImageSwipeBase._imageCache.get(imageUrl);
+        if (image) {
+            this._prepareImageView(image, imageView);
+            activityIndicator.stopAnimating();
+        }
+        else {
+            common.ImageSwipeBase._imageCache.push({
+                key: imageUrl,
+                url: imageUrl,
+                completed: (imageSource) => {
+                    this._prepareImageView(imageSource, imageView);
+                    activityIndicator.stopAnimating();
+                }
+            });
+        }
+    }
 
     private _prepareImageView(image: UIImage, imageView: UIImageView) {
         imageView.image = image;
@@ -231,9 +266,11 @@ export class ImageSwipe extends common.ImageSwipeBase {
         }
 
         const zoomScrollView = imageView.superview as UIScrollView;
-        let minimumScale: number;
+        if (zoomScrollView.frame.size.width === 0 || zoomScrollView.frame.size.height === 0) { // This is to avoid incorrect resize before the control is layout
+            return;
+        }
 
-        minimumScale = Math.min(zoomScrollView.frame.size.width / imageView.image.size.width, zoomScrollView.frame.size.height / imageView.image.size.height);
+        const minimumScale = Math.min(zoomScrollView.frame.size.width / imageView.image.size.width, zoomScrollView.frame.size.height / imageView.image.size.height);
 
         zoomScrollView.contentSize = imageView.frame.size;
         zoomScrollView.minimumZoomScale = minimumScale;
@@ -248,11 +285,11 @@ export class ImageSwipe extends common.ImageSwipeBase {
         }
 
         const pageView = this._views[page];
-
         if (pageView) {
             pageView.view.removeFromSuperview();
-            this._views[page] = null;
         }
+
+        this._views[page] = null;
     }
 
     private _purgeAllPages() {
