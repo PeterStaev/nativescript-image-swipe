@@ -4,11 +4,18 @@
   "readme": "NativeScript Application",
   "repository": "<fill-your-repository-here>",
   "nativescript": {
-    "id": "org.nativescript.demo"
+    "id": "com.tangrainc.imageswipedemo",
+    "tns-ios": {
+      "version": "2.5.0"
+    }
   },
+  "scripts": {
+    "android": "npm uninstall nativescript-grid-view && tns platform remove android && tns platform add android@rc && tns run android --emulator",
+    "ios": "npm uninstall nativescript-grid-view && tns run ios --emulator"
+  },  
   "dependencies": {
-    "nativescript-theme-core": "~1.0.2",
-    "tns-core-modules": "2.5.2"
+    "tns-core-modules": "2.5.2",
+    "nativescript-image-swipe": "file:../bin/dist"
   },
   "devDependencies": {
     "nativescript-dev-android-snapshot": "^0.*.*",

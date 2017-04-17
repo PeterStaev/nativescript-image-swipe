@@ -1,31 +1,28 @@
-/*
-In NativeScript, a file with the same name as an XML file is known as
-a code-behind file. The code-behind is a great place to place your view
-logic, and to set up your page’s data binding.
-*/
+import { EventData, Observable } from "data/observable";
+import { ObservableArray } from "data/observable-array";
+import { Page } from "ui/page";
 
-import { EventData } from 'data/observable';
-import { Page } from 'ui/page';
-import { HelloWorldModel } from './main-view-model';
+import { PageChangeEventData } from "nativescript-image-swipe";
 
-// Event handler for Page "navigatingTo" event attached in main-page.xml
+let viewModel: Observable;
+
 export function navigatingTo(args: EventData) {
-    /*
-    This gets a reference this page’s <Page> UI component. You can
-    view the API reference of the Page to see what’s available at
-    https://docs.nativescript.org/api-reference/classes/_ui_page_.page.html
-    */
-    let page = <Page>args.object;
-    
-    /*
-    A page’s bindingContext is an object that should be used to perform
-    data binding between XML markup and TypeScript code. Properties
-    on the bindingContext can be accessed using the {{ }} syntax in XML.
-    In this example, the {{ message }} and {{ onTap }} bindings are resolved
-    against the object returned by createViewModel().
+    const page = args.object as Page;
+    const items = new ObservableArray();
 
-    You can learn more about data binding in NativeScript at
-    https://docs.nativescript.org/core-concepts/data-binding.
-    */
-    page.bindingContext = new HelloWorldModel();
+    items.push({ imageUrl: "http://press.nationalgeographic.com/files/2013/08/NationalGeographic_1184784-smaller.jpg" });
+    items.push({ imageUrl: "http://ngm.nationalgeographic.com/2011/12/tigers/img/14-mother-rests-with-cub_1600.jpg" });
+    items.push({ imageUrl: "http://ngm.nationalgeographic.com/wallpaper/img/2013/04/01-manatees-swim-close-to-surface_1600.jpg" });
+    items.push({ imageUrl: "http://ngm.nationalgeographic.com/wallpaper/img/2013/08/12-cboy-zebra-feast_1600.jpg" });
+    items.push({ imageUrl: "http://voices.nationalgeographic.com/files/2013/04/NationalGeographic_1329449.jpg" });
+
+    viewModel = new Observable();
+    viewModel.set("items", items);
+    viewModel.set("pageNumber", 3);
+
+    page.bindingContext = viewModel;
+}
+
+export function pageChanged(e: PageChangeEventData) {
+    console.log(`Page changed to ${e.page}.`);
 }
