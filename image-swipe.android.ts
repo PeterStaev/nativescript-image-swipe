@@ -38,6 +38,10 @@ export class ImageSwipe extends common.ImageSwipeBase {
             // tslint:disable-next-line:no-empty
             onPageScrollStateChanged: () => { }
         }));
+
+        if (this.pageNumber !== null && this.pageNumber !== undefined) {
+            this._android.setCurrentItem(this.pageNumber);
+        }
     }
 
     get android(): StateViewPager {
@@ -45,11 +49,15 @@ export class ImageSwipe extends common.ImageSwipeBase {
     }
 
     public loadCurrentPage() {
-        this._android.setCurrentItem(this.pageNumber);
+        if (this._android) {
+            this._android.setCurrentItem(this.pageNumber);
+        }    
     }
 
     public refresh() {
-        this._android.getAdapter().notifyDataSetChanged();
+        if (this._android) {
+            this._android.getAdapter().notifyDataSetChanged();
+        }    
     }
 }
 
@@ -117,13 +125,13 @@ class ImageSwipePageAdapter extends android.support.v4.view.PagerAdapter {
         container.addView(layout);
 
         progressBar.setVisibility(android.view.View.VISIBLE);
-        const image: android.graphics.Bitmap = ImageSwipe._imageCache.get(imageUrl);
+        const image: android.graphics.Bitmap = common.ImageSwipeBase._imageCache.get(imageUrl);
         if (image) {
             imageView.setImageBitmap(image);
             progressBar.setVisibility(android.view.View.GONE);
         }
         else {
-            ImageSwipe._imageCache.push({
+            common.ImageSwipeBase._imageCache.push({
                 key: imageUrl,
                 url: imageUrl,
                 completed: (bitmap: android.graphics.Bitmap) => {

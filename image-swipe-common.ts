@@ -1,26 +1,13 @@
 import { EventData } from "data/observable";
 import { Property, PropertyChangeData, PropertyMetadataSettings } from "ui/core/dependency-observable";
 import { PropertyMetadata } from "ui/core/proxy";
-// import { View } from "ui/core/view";
 import { Cache } from "ui/image-cache";
 import { ScrollView } from "ui/scroll-view";
 
-// const ITEMSCHANGED = "_itemsChanged";
 const IMAGESCROLLER = "ImageScroller";
-// const CHANGE = "change";
 
 function onItemsPropertyChanged(data: PropertyChangeData) {
     const imageSwipe = data.object as ImageSwipeBase;
-    // const itemsChanged = imageSwipe[ITEMSCHANGED];
-
-    // if (data.oldValue instanceof Observable) {
-    //     (data.oldValue as Observable).off(CHANGE, itemsChanged);
-    // }
-
-    // if (data.newValue instanceof Observable) {
-    //     (data.newValue as Observable).on(CHANGE, itemsChanged);
-    // }
-
     imageSwipe.refresh();
 }
 

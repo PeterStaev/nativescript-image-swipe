@@ -50,10 +50,10 @@
         },
         exec: {
             tsCompile: {
-                cmd: "node ./node_modules/typescript/bin/tsc --project tsconfig.json --outDir " + localConfig.outDir
+                cmd: "./node_modules/.bin/tsc --project tsconfig.json --outDir " + localConfig.outDir
             },
             tslint: {
-                cmd: "node ./node_modules/tslint/bin/tslint --project tsconfig.json"
+                cmd: "./node_modules/.bin/tslint --project tsconfig.json"
             },
             npm_publish: {
                 cmd: "npm publish",

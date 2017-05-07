@@ -8,13 +8,13 @@
     "platforms": {
       "ios": "2.5.0",
       "android": "2.5.0"
-    }
-  },
- "plugin": {
-      "nan": "false",
-      "pan": "true",
-      "core3": "false",
-      "category": "Interface"
+    },
+    "plugin": {
+        "nan": "false",
+        "pan": "true",
+        "core3": "false",
+        "category": "Interface"
+      }
   },
   "repository": {
     "type": "git",
@@ -32,6 +32,10 @@
   ],
   "author": "Peter Staev <peter@tangrasoft.com>",
   "license": "Apache-2.0",
+
+  "peerDependencies": {
+     "tns-core-modules": "< 3"
+  },
 
   "devDependencies": {
     "typescript": "~2.1.6",

@@ -3,5 +3,12 @@ export default [
 
     // iOS
     "UIScrollViewPagedDelegate",
-    "UIScrollViewZoomDelegateImpl"
+    "UIScrollViewZoomDelegateImpl",
+
+    // Android
+    "StateViewPager",
+    "ImageSwipePageAdapter",
+    "ZoomImageView",
+    "OrientationListener",
+    "OnCanScrollChangeListener"
 ];
