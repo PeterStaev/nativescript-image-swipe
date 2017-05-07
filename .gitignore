@@ -54,4 +54,5 @@ node_modules
 *.tmp.*
 platforms
 demo/lib
+hooks
 *.log

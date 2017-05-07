@@ -39,7 +39,7 @@ Gets the native android widget that represents the user interface for this compo
 * **items** - *Array | ObservableArray*  
 Gets or sets the items collection of the ImageSwipe. The items property can be set to an array or an object defining length and getItem(index) method.
 
-* **currentPage** - *Number*  
+* **pageNumber** - *Number*  
 Gets or sets the currently visible image.
 
 * **imageUrlProperty** - *string*  
@@ -87,6 +87,56 @@ export function navigatingTo(args: EventData) {
 
 export function pageChanged(e: PageChangeEventData) {
     console.log(`Page changed to ${e.page}.`);
+}
+```
+
+## Angular Example
+```typescript
+// main.ts
+import { platformNativeScriptDynamic } from "nativescript-angular/platform";
+import { registerElement } from "nativescript-angular/element-registry";
+
+import { AppModule } from "./app.module";
+
+registerElement("ImageSwipe", () => require("nativescript-image-swipe/image-swipe").ImageSwipe);
+
+platformNativeScriptDynamic().bootstrapModule(AppModule);
+```
+
+```html
+<!-- test.component.html -->
+<GridLayout>
+    <ImageSwipe [items]="items" imageUrlProperty="imageUrl" 
+                [pageNumber]="pageNumber" (pageChanged)="pageChanged($event)" backgroundColor="#000000">
+    </ImageSwipe>
+</GridLayout>
+```
+
+```typescript
+// test.component.ts
+import { Component, OnInit } from "@angular/core";
+import { PageChangeEventData } from "nativescript-image-swipe";
+
+@Component({
+    selector: "demo",
+    moduleId: module.id,
+    templateUrl: "./test.component.html",
+})
+export class ImageSwipeComponent implements OnInit {
+    public items: any[] = [];
+    public pageNumber: number = 3;
+
+    ngOnInit(): void {
+        this.items.push({ imageUrl: "http://something.com/picture1.jpg" });
+        this.items.push({ imageUrl: "http://something.com/picture2.jpg" });
+        this.items.push({ imageUrl: "http://something.com/picture3.jpg" });
+        this.items.push({ imageUrl: "http://something.com/picture4.jpg" });
+        this.items.push({ imageUrl: "http://something.com/picture5.jpg" });
+    }
+
+    public pageChanged(e: PageChangeEventData) {
+        console.log(`Page changed to ${e.page}.`);
+    }
 }
 ```
 

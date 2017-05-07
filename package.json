@@ -10,7 +10,7 @@
       "android": "2.5.0"
     },
     "plugin": {
-        "nan": "false",
+        "nan": "true",
         "pan": "true",
         "core3": "false",
         "category": "Interface"

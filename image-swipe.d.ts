@@ -9,7 +9,7 @@ declare module "nativescript-image-swipe" {
 
         public items: any;
         public imageUrlProperty: string;
-        public currentPage: number;
+        public pageNumber: number;
 
         public ios: any; /* UIScrollView */
         public android: any; /* android.support.v4.view.ViewPager */
