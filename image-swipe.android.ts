@@ -1,64 +1,111 @@
-import * as common from "./image-swipe-common";
-
-global.moduleMerge(common, exports);
+// import { PageChangeEventData } from ".";
+import { ImageSwipeBase, itemsProperty, pageNumberProperty } from "./image-swipe-common";
 
 // These constants specify the mode that we're in
 const MODE_NONE = 0;
 const MODE_DRAG = 1;
 const MODE_ZOOM = 2;
 
-export class ImageSwipe extends common.ImageSwipeBase {
-    private _android: StateViewPager;
+export * from "./image-swipe-common";
 
-    public _createUI() {
-        this._android = new StateViewPager(this._context);
-        this._android.setOffscreenPageLimit(1);
-        this._android.setAdapter(new ImageSwipePageAdapter(this));
+export class ImageSwipe extends ImageSwipeBase {
+    public nativeView: StateViewPager;
 
-        const that = new WeakRef(this);
-        this._android.setOnPageChangeListener(new android.support.v4.view.ViewPager.OnPageChangeListener({
-            onPageSelected: (index: number) => {
-                const owner = that.get();
-                owner.pageNumber = index;
+    public createNativeView() {
+        const stateViewPager = new StateViewPager(this._context);
 
-                let preloadedImageView: ZoomImageView;
+        stateViewPager.setOffscreenPageLimit(1);
 
-                preloadedImageView = owner.android.findViewWithTag("Item" + (index - 1).toString()) as ZoomImageView;
-                if (preloadedImageView) {
-                    preloadedImageView.reset();
-                }
+        const adapter = new ImageSwipePageAdapter(new WeakRef(this));
+        (stateViewPager as any).adapter = adapter;
+        stateViewPager.setAdapter(adapter);
 
-                preloadedImageView = owner.android.findViewWithTag("Item" + (index + 1).toString()) as ZoomImageView;
-                if (preloadedImageView) {
-                    preloadedImageView.reset();
-                }
-            },
-            // tslint:disable-next-line:no-empty
-            onPageScrolled: () => { },
-            // tslint:disable-next-line:no-empty
-            onPageScrollStateChanged: () => { }
-        }));
+        const imageSwipePageListener = new ImageSwipePageChangeListener(new WeakRef(this));
+        (stateViewPager as any).imageSwipePageListener = imageSwipePageListener;
+        stateViewPager.setOnPageChangeListener(imageSwipePageListener);
 
         if (this.pageNumber !== null && this.pageNumber !== undefined) {
-            this._android.setCurrentItem(this.pageNumber);
+            stateViewPager.setCurrentItem(this.pageNumber);
         }
+
+        return stateViewPager;
+    }
+
+    public initNativeView() {
+        super.initNativeView();
+
+        const nativeView = this.nativeView as any;
+        nativeView.adapter.owner = new WeakRef(this);
+        nativeView.imageSwipePageListener.owner = new WeakRef(this);
     }
 
     get android(): StateViewPager {
-        return this._android;
+        return this.nativeView;
     }
 
+    public [pageNumberProperty.setNative](value: number) {
+        this.nativeView.setCurrentItem(value);
+    }
+
+    public [itemsProperty.setNative](value: any) {
+        this.nativeView.getAdapter().notifyDataSetChanged();
+
+        // Coerce selected index after we have set items to native view.
+        pageNumberProperty.coerce(this);        
+    }
+ 
     public loadCurrentPage() {
-        if (this._android) {
-            this._android.setCurrentItem(this.pageNumber);
+        if (this.nativeView) {
+            // todo remove
         }    
     }
 
     public refresh() {
-        if (this._android) {
-            this._android.getAdapter().notifyDataSetChanged();
+        if (this.nativeView) {
+            // todo remove
         }    
     }
+}
+
+@Interfaces([android.support.v4.view.ViewPager.OnPageChangeListener])
+class ImageSwipePageChangeListener extends java.lang.Object implements android.support.v4.view.ViewPager.OnPageChangeListener {
+    constructor(private owner: WeakRef<ImageSwipe>) {
+        super();
+
+        return global.__native(this);
+    }
+
+    public onPageSelected(index: number) {
+        const owner = this.owner.get();
+
+        owner.pageNumber = index;
+
+        owner.notify({
+            eventName: ImageSwipe.pageChangedEvent,
+            object: owner,
+            page: index
+        }); 
+        
+        let preloadedImageView: ZoomImageView;
+
+        preloadedImageView = owner.android.findViewWithTag("Item" + (index - 1).toString()) as ZoomImageView;
+        if (preloadedImageView) {
+            preloadedImageView.reset();
+        }
+
+        preloadedImageView = owner.android.findViewWithTag("Item" + (index + 1).toString()) as ZoomImageView;
+        if (preloadedImageView) {
+            preloadedImageView.reset();
+        }
+    }
+
+    public onPageScrolled() {
+        // Currently not used
+    }
+
+    public onPageScrollStateChanged() {
+        // Currently not used
+    }  
 }
 
 class StateViewPager extends android.support.v4.view.ViewPager {
@@ -84,39 +131,36 @@ class StateViewPager extends android.support.v4.view.ViewPager {
 }
 
 class ImageSwipePageAdapter extends android.support.v4.view.PagerAdapter {
-    private _imageSwipe: ImageSwipe;
-
-    constructor(imageSwipe: ImageSwipe) {
+    constructor(private owner: WeakRef<ImageSwipe>) {
         super();
 
-        this._imageSwipe = imageSwipe;
-
-        return __native(this);
+        return global.__native(this);
     }
 
     public instantiateItem(container: android.view.ViewGroup, position: number): java.lang.Object {
-        const imageUrl = this._imageSwipe._getDataItem(position)[this._imageSwipe.imageUrlProperty];
+        const owner = this.owner.get();
+        const imageUrl = owner._getDataItem(position)[owner.imageUrlProperty];
         const params = new android.support.v4.view.ViewPager.LayoutParams();
         params.height = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
         params.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
         
-        const imageView = new ZoomImageView(this._imageSwipe._context);
+        const imageView = new ZoomImageView(owner._context);
         imageView.setLayoutParams(params);
         imageView.setTag("Item" + position.toString());
 
-        const that = new WeakRef(this._imageSwipe);
+        const that = new WeakRef(owner);
         imageView.setOnCanScrollChangeListener(new OnCanScrollChangeListener({
             onCanScrollChanged: (canScroll: boolean) => {
                 that.get().android.setAllowScrollIn(canScroll);
             }
         }));
 
-        const progressBar = new android.widget.ProgressBar(this._imageSwipe._context);
+        const progressBar = new android.widget.ProgressBar(owner._context);
         progressBar.setLayoutParams(params);
         progressBar.setVisibility(android.view.View.GONE);
         progressBar.setIndeterminate(true);
 
-        const layout = new android.widget.LinearLayout(this._imageSwipe._context);
+        const layout = new android.widget.LinearLayout(owner._context);
         layout.setLayoutParams(params);
         layout.setOrientation(android.widget.LinearLayout.VERTICAL);
         layout.addView(progressBar);
@@ -125,13 +169,13 @@ class ImageSwipePageAdapter extends android.support.v4.view.PagerAdapter {
         container.addView(layout);
 
         progressBar.setVisibility(android.view.View.VISIBLE);
-        const image: android.graphics.Bitmap = common.ImageSwipeBase._imageCache.get(imageUrl);
+        const image: android.graphics.Bitmap = ImageSwipeBase._imageCache.get(imageUrl);
         if (image) {
             imageView.setImageBitmap(image);
             progressBar.setVisibility(android.view.View.GONE);
         }
         else {
-            common.ImageSwipeBase._imageCache.push({
+            ImageSwipeBase._imageCache.push({
                 key: imageUrl,
                 url: imageUrl,
                 completed: (bitmap: android.graphics.Bitmap) => {
@@ -149,7 +193,8 @@ class ImageSwipePageAdapter extends android.support.v4.view.PagerAdapter {
     }
 
     public getCount(): number {
-        return this._imageSwipe && this._imageSwipe.items ? this._imageSwipe.items.length : 0;
+        const owner = this.owner.get();
+        return owner && owner.items ? owner.items.length : 0;
     }
 
     public isViewFromObject(view: android.view.View, object: java.lang.Object): boolean {

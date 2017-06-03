@@ -1,18 +1,18 @@
 {
   "name": "nativescript-image-swipe",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A widget to easily swipe and zoom through images",
   "main": "image-swipe",
   "typings": "image-swipe.d.ts",
   "nativescript": {
     "platforms": {
-      "ios": "2.5.0",
-      "android": "2.5.0"
+      "ios": "3.0.0",
+      "android": "3.0.0"
     },
     "plugin": {
         "nan": "true",
         "pan": "true",
-        "core3": "false",
+        "core3": "true",
         "category": "Interface"
       }
   },
@@ -34,14 +34,14 @@
   "license": "Apache-2.0",
 
   "peerDependencies": {
-     "tns-core-modules": "< 3"
+     "tns-core-modules": "^3.0.0"
   },
 
   "devDependencies": {
-    "typescript": "~2.1.6",
-    "tslint": "4.5.1",
-    "tns-core-modules": "2.5.2",
-    "tns-platform-declarations": "2.5.2",
+    "typescript": "~2.2.2",
+    "tslint": "5.2.0",
+    "tns-core-modules": "3.0.1",
+    "tns-platform-declarations": "3.0.1",
 
     "grunt": "1.0.1",
     "grunt-contrib-copy": "1.0.0",
