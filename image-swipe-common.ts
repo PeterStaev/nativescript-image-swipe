@@ -33,17 +33,14 @@ export abstract class ImageSwipeBase extends ScrollView {
     }
 
     public [imageUrlPropertyProperty.setNative](value: string): void {
-        this.imageUrlProperty = value;
         this.refresh();
     }
 
     public [itemsProperty.setNative](value: any[]): void {
-        this.items = value;
         this.refresh();
     }
 
     public [pageNumberProperty.setNative](value: number): void {
-        this.pageNumber = value;
         this.loadCurrentPage();
         this.notify({
             eventName: pageChangedEvent,
