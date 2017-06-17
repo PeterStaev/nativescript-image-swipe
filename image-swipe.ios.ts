@@ -307,14 +307,14 @@ export class ImageSwipe extends common.ImageSwipeBase {
         return this.getMeasuredWidth() / screen.mainScreen.scale;
     }
 
-    private _getMeasuredHeight(): number{
+    private _getMeasuredHeightNormalized(): number{
         return this.getMeasuredHeight() / screen.mainScreen.scale;
     }
 
     private _calcScrollViewContentSize() {
         const scrollView: UIScrollView = this.ios;
         const width = this._getMeasuredWidthNormalized(); 
-        const height = this._getMeasuredHeight();
+        const height = this._getMeasuredHeightNormalized();
 
         scrollView.contentSize = CGSizeMake(this.items.length * width, height);
     }    
