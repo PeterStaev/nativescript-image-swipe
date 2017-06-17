@@ -1,13 +1,14 @@
-import { Property } from "ui/core/dependency-observable";
+import { Cache } from "tns-core-modules/ui/image-cache";
 
 declare module "nativescript-image-swipe" {
+    export class ImageSwipeBase {
+        public static _imageCache: Cache;
+    }
+    
     export class ImageSwipe {
         public static pageChangedEvent: string;
-        public static itemsProperty: Property;
-        public static imageUrlPropertyProperty: Property;
-        public static currentPageProperty: Property;
-
-        public items: any;
+        
+        public items: any[];
         public imageUrlProperty: string;
         public pageNumber: number;
 

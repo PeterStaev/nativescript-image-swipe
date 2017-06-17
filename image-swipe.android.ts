@@ -10,7 +10,7 @@ const MODE_ZOOM = 2;
 export class ImageSwipe extends common.ImageSwipeBase {
     private _android: StateViewPager;
 
-    public _createUI() {
+    public createNativeView(): StateViewPager {
         this._android = new StateViewPager(this._context);
         this._android.setOffscreenPageLimit(1);
         this._android.setAdapter(new ImageSwipePageAdapter(this));
@@ -42,6 +42,8 @@ export class ImageSwipe extends common.ImageSwipeBase {
         if (this.pageNumber !== null && this.pageNumber !== undefined) {
             this._android.setCurrentItem(this.pageNumber);
         }
+
+        return this._android;
     }
 
     get android(): StateViewPager {
@@ -95,7 +97,7 @@ class ImageSwipePageAdapter extends android.support.v4.view.PagerAdapter {
     }
 
     public instantiateItem(container: android.view.ViewGroup, position: number): java.lang.Object {
-        const imageUrl = this._imageSwipe._getDataItem(position)[this._imageSwipe.imageUrlProperty];
+        const imageUrl = this._imageSwipe.items[position][this._imageSwipe.imageUrlProperty];
         const params = new android.support.v4.view.ViewPager.LayoutParams();
         params.height = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
         params.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;

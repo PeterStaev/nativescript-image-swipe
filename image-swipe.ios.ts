@@ -1,5 +1,6 @@
-import * as utils from "utils/utils";
-import common = require("./image-swipe-common");
+import { screen } from "tns-core-modules/platform";
+import * as utils from "tns-core-modules/utils/utils";
+import * as common from "./image-swipe-common";
 
 global.moduleMerge(common, exports);
 
@@ -98,7 +99,7 @@ export class ImageSwipe extends common.ImageSwipeBase {
             this._calcScrollViewContentSize();
 
             if (!this.isScrollingIn) {
-                scrollView.setContentOffsetAnimated(CGPointMake(this.pageNumber * this.getMeasuredWidth(), 0), false);
+                scrollView.setContentOffsetAnimated(CGPointMake(this.pageNumber * this._getMeasuredWidthNormalized(), 0), false);
             }
 
             for (let loop = Math.max(0, this.pageNumber - 1); loop <= Math.min(this.pageNumber + 1, this.items.length - 1); loop++) {
@@ -195,7 +196,7 @@ export class ImageSwipe extends common.ImageSwipeBase {
         }
 
         const scrollView: UIScrollView = this.ios;
-        const imageUrl = this._getDataItem(page)[this.imageUrlProperty];
+        const imageUrl = this.items[page][this.imageUrlProperty];
         let imageView: UIImageView;
         let activityIndicator: UIActivityIndicatorView;
         let view: UIView;
@@ -266,7 +267,7 @@ export class ImageSwipe extends common.ImageSwipeBase {
         }
 
         const zoomScrollView = imageView.superview as UIScrollView;
-        if (zoomScrollView.frame.size.width === 0 || zoomScrollView.frame.size.height === 0) { // This is to avoid incorrect resize before the control is layout
+        if (!zoomScrollView || zoomScrollView.frame.size.width === 0 || zoomScrollView.frame.size.height === 0) { // This is to avoid incorrect resize before the control is layout
             return;
         }
 
@@ -302,10 +303,18 @@ export class ImageSwipe extends common.ImageSwipeBase {
         }
     }
 
+    private _getMeasuredWidthNormalized(): number {
+        return this.getMeasuredWidth() / screen.mainScreen.scale;
+    }
+
+    private _getMeasuredHeightNormalized(): number{
+        return this.getMeasuredHeight() / screen.mainScreen.scale;
+    }
+
     private _calcScrollViewContentSize() {
         const scrollView: UIScrollView = this.ios;
-        const width = this.getMeasuredWidth();
-        const height = this.getMeasuredHeight();
+        const width = this._getMeasuredWidthNormalized(); 
+        const height = this._getMeasuredHeightNormalized();
 
         scrollView.contentSize = CGSizeMake(this.items.length * width, height);
     }    
