@@ -19,23 +19,6 @@ import { ItemsSource } from "ui/list-picker";
 import { ScrollView } from "ui/scroll-view";
 import { ImageSwipe as ImageSwipeDefinition } from ".";
 
-// const IMAGESCROLLER = "ImageScroller";
-
-// function onItemsPropertyChanged(data: PropertyChangeData) {
-//     const imageSwipe = data.object as ImageSwipeBase;
-//     imageSwipe.refresh();
-// }
-
-// function onPagePropertyChanged(data: PropertyChangeData) {
-//     const imageScroller = data.object as ImageSwipeBase;
-//     imageScroller.loadCurrentPage();
-//     imageScroller.notify({
-//         eventName: ImageSwipeBase.pageChangedEvent,
-//         object: imageScroller,
-//         page: data.newValue
-//     } as PageChangeEventData);
-// }
-
 export * from "ui/scroll-view";
 
 export class ImageSwipeBase extends ScrollView implements ImageSwipeDefinition {
@@ -55,9 +38,6 @@ export class ImageSwipeBase extends ScrollView implements ImageSwipeDefinition {
             ImageSwipeBase._imageCache.maxRequests = 3;
         }    
     }
-
-    // public abstract refresh();
-    // public abstract loadCurrentPage();
 
     public _getDataItem(index: number): any {
         return this.isItemsSourceIn ? (this.items as ItemsSource).getItem(index) : this.items[index];
