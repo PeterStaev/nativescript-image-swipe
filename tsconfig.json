@@ -4,13 +4,16 @@
         "noEmitOnError": true,
         "noEmitHelpers": true,
         "sourceMap": false,
-        "noLib": true,
         "removeComments": true,
         "declaration": false,
         "experimentalDecorators": true,
         "target": "es5",
         "module": "commonjs",
-        "outDir": "bin/dist"
+        "outDir": "bin/dist",
+        "lib": [
+            "es6",
+            "dom"
+        ]
     }, 
     "exclude": [
         "node_modules", 
