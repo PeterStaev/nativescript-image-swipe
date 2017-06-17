@@ -1,4 +1,18 @@
-// import { PageChangeEventData } from ".";
+/*! *****************************************************************************
+Copyright (c) 2017 Tangra Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+***************************************************************************** */
 import { ImageSwipeBase, itemsProperty, pageNumberProperty } from "./image-swipe-common";
 
 // These constants specify the mode that we're in
@@ -51,19 +65,7 @@ export class ImageSwipe extends ImageSwipeBase {
         this.nativeView.getAdapter().notifyDataSetChanged();
 
         // Coerce selected index after we have set items to native view.
-        pageNumberProperty.coerce(this);        
-    }
- 
-    public loadCurrentPage() {
-        if (this.nativeView) {
-            // todo remove
-        }    
-    }
-
-    public refresh() {
-        if (this.nativeView) {
-            // todo remove
-        }    
+        pageNumberProperty.coerce(this);
     }
 }
 
@@ -84,8 +86,8 @@ class ImageSwipePageChangeListener extends java.lang.Object implements android.s
             eventName: ImageSwipe.pageChangedEvent,
             object: owner,
             page: index
-        }); 
-        
+        });
+
         let preloadedImageView: ZoomImageView;
 
         preloadedImageView = owner.android.findViewWithTag("Item" + (index - 1).toString()) as ZoomImageView;
@@ -105,7 +107,7 @@ class ImageSwipePageChangeListener extends java.lang.Object implements android.s
 
     public onPageScrollStateChanged() {
         // Currently not used
-    }  
+    }
 }
 
 class StateViewPager extends android.support.v4.view.ViewPager {
@@ -143,7 +145,7 @@ class ImageSwipePageAdapter extends android.support.v4.view.PagerAdapter {
         const params = new android.support.v4.view.ViewPager.LayoutParams();
         params.height = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
         params.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-        
+
         const imageView = new ZoomImageView(owner._context);
         imageView.setLayoutParams(params);
         imageView.setTag("Item" + position.toString());
@@ -355,7 +357,7 @@ class ZoomImageView extends android.widget.ImageView {
         canvas.save();
 
         const scaleFactor = this.getScaleFactor();
-                    
+
         // We're going to scale the X and Y coordinates by the same amount
         canvas.scale(scaleFactor, scaleFactor);
         canvas.translate(-(this.getTotalTranslateX() + this.getTranslateX()) / scaleFactor, -(this.getTotalTranslateY() + this.getTranslateY()) / scaleFactor);

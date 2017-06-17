@@ -1,70 +1,36 @@
+/*! *****************************************************************************
+Copyright (c) 2017 Tangra Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+***************************************************************************** */
 import * as utils from "utils/utils";
-import common = require("./image-swipe-common");
+import { ImageSwipeBase, itemsProperty, pageNumberProperty } from "./image-swipe-common";
 
-global.moduleMerge(common, exports);
+export * from "./image-swipe-common";
 
-class UIScrollViewPagedDelegate extends NSObject implements UIScrollViewDelegate {
-    public static ObjCProtocols = [UIScrollViewDelegate];
+export class ImageSwipe extends ImageSwipeBase {
+    public isScrollingIn = false;
 
-    public static initWithOwner(owner: WeakRef<ImageSwipe>): UIScrollViewPagedDelegate {
-        const delegate = UIScrollViewPagedDelegate.new() as UIScrollViewPagedDelegate;
-        delegate._owner = owner;
-
-        return delegate;
-    }
-
-    private _owner: WeakRef<ImageSwipe>;
-
-    public scrollViewDidScroll(scrollView: UIScrollView) {
-        this._owner.get().isScrollingIn = true;
-    }
-
-    public scrollViewDidEndDecelerating(scrollView: UIScrollView) {
-        const pageWidth = scrollView.frame.size.width;
-        const owner = this._owner.get();
-
-        owner.isScrollingIn = false;
-        owner.pageNumber = Math.floor(Math.abs(scrollView.contentOffset.x) / pageWidth);
-    }
-
-}
-
-class UIScrollViewZoomDelegateImpl extends NSObject implements UIScrollViewDelegate {
-    public static ObjCProtocols = [UIScrollViewDelegate];
-
-    public static initWithOwnerAndZoomView(owner: WeakRef<ImageSwipe>, zoomView: WeakRef<UIImageView>): UIScrollViewZoomDelegateImpl {
-        const delegate = UIScrollViewZoomDelegateImpl.new() as UIScrollViewZoomDelegateImpl;
-
-        delegate._zoomView = zoomView;
-        delegate._owner = owner;
-
-        return delegate;
-    }
-
-    private _zoomView: WeakRef<UIImageView>;
-    private _owner: WeakRef<ImageSwipe>;
-
-    public viewForZoomingInScrollView(scrollView: UIScrollView) {
-        return this._zoomView.get();
-    }
-
-    public scrollViewDidZoom(scrollView: UIScrollView) {
-        this._owner.get()._centerImageView(this._zoomView.get());        
-    }
-    
-}
-
-export class ImageSwipe extends common.ImageSwipeBase {
     private _views: Array<{ view: UIView; imageView: UIImageView; zoomDelegate: UIScrollViewZoomDelegateImpl }>;
     private _delegate: UIScrollViewPagedDelegate;
-
-    private _isScrollingIn: boolean;
-    get isScrollingIn(): boolean {
-        return this._isScrollingIn;
-    }
-    set isScrollingIn(value: boolean) {
-        this._isScrollingIn = value;
-    }
+    
+    // private _isScrollingIn: boolean;
+    // get isScrollingIn(): boolean {
+    //     return this._isScrollingIn;
+    // }
+    // set isScrollingIn(value: boolean) {
+    //     this._isScrollingIn = value;
+    // }
 
     constructor() {
         super();
@@ -103,42 +69,77 @@ export class ImageSwipe extends common.ImageSwipeBase {
 
             for (let loop = Math.max(0, this.pageNumber - 1); loop <= Math.min(this.pageNumber + 1, this.items.length - 1); loop++) {
                 this._resizeNativeViews(loop);
-                this._positionImageView(this._views[loop].imageView);
+                if (this._views[loop]) {
+                    this._positionImageView(this._views[loop].imageView);
+                }    
             }
         }        
     }
 
-    public loadCurrentPage() {
+    public [itemsProperty.setNative](value: any) {
+        this._purgeAllPages();
+        this._calcScrollViewContentSize();
+        
+        // Coerce selected index after we have set items to native view.
+        pageNumberProperty.coerce(this);
+    }
+
+    public [pageNumberProperty.setNative](value: number) {
         const scrollView: UIScrollView = this.ios;
         const pageWidth = scrollView.frame.size.width;
 
         if (!this.isScrollingIn) {
-            scrollView.contentOffset = CGPointMake(this.pageNumber * pageWidth, 0);
+            scrollView.contentOffset = CGPointMake(value * pageWidth, 0);
         }
 
-        for (let loop = 0; loop < this.pageNumber - 1; loop++) {
+        for (let loop = 0; loop < value - 1; loop++) {
             this._purgePage(loop);
         }
         
-        // Load current page and one ahead one behind for cahing purposes
-        this._loadPage(this.pageNumber); // Always load the current page first
-        if (this.pageNumber - 1 >= 0) {
-            this._loadPage(this.pageNumber - 1);
+        // Load current page and one ahead one behind for caching purposes
+        this._loadPage(value); // Always load the current page first
+        if (value - 1 >= 0) {
+            this._loadPage(value - 1);
         }
-        if (this.pageNumber + 1 < this.items.length) {
-            this._loadPage(this.pageNumber + 1);
+        if (value + 1 < this.items.length) {
+            this._loadPage(value + 1);
         }
         
-        for (let loop = this.pageNumber + 2 ; loop < this.items.length; loop++) {
+        for (let loop = value + 2 ; loop < this.items.length; loop++) {
             this._purgePage(loop);
         }
     }
+    // public loadCurrentPage() {
+    //     const scrollView: UIScrollView = this.ios;
+    //     const pageWidth = scrollView.frame.size.width;
+
+    //     if (!this.isScrollingIn) {
+    //         scrollView.contentOffset = CGPointMake(this.pageNumber * pageWidth, 0);
+    //     }
+
+    //     for (let loop = 0; loop < this.pageNumber - 1; loop++) {
+    //         this._purgePage(loop);
+    //     }
+        
+    //     // Load current page and one ahead one behind for cahing purposes
+    //     this._loadPage(this.pageNumber); // Always load the current page first
+    //     if (this.pageNumber - 1 >= 0) {
+    //         this._loadPage(this.pageNumber - 1);
+    //     }
+    //     if (this.pageNumber + 1 < this.items.length) {
+    //         this._loadPage(this.pageNumber + 1);
+    //     }
+        
+    //     for (let loop = this.pageNumber + 2 ; loop < this.items.length; loop++) {
+    //         this._purgePage(loop);
+    //     }
+    // }
     
-    public refresh() {
-        this._purgeAllPages();
-        this._calcScrollViewContentSize();
-        this.loadCurrentPage();
-    }
+    // public refresh() {
+    //     this._purgeAllPages();
+    //     this._calcScrollViewContentSize();
+    //     this.loadCurrentPage();
+    // }
 
     public _centerImageView(imageView: UIImageView) {
         const boundSize = imageView.superview.bounds.size;
@@ -236,13 +237,13 @@ export class ImageSwipe extends common.ImageSwipeBase {
 
         activityIndicator.startAnimating();
 
-        image = common.ImageSwipeBase._imageCache.get(imageUrl);
+        image = ImageSwipeBase._imageCache.get(imageUrl);
         if (image) {
             this._prepareImageView(image, imageView);
             activityIndicator.stopAnimating();
         }
         else {
-            common.ImageSwipeBase._imageCache.push({
+            ImageSwipeBase._imageCache.push({
                 key: imageUrl,
                 url: imageUrl,
                 completed: (imageSource) => {
@@ -309,4 +310,53 @@ export class ImageSwipe extends common.ImageSwipeBase {
 
         scrollView.contentSize = CGSizeMake(this.items.length * width, height);
     }    
+}
+
+@ObjCClass(UIScrollViewDelegate)
+class UIScrollViewPagedDelegate extends NSObject implements UIScrollViewDelegate {
+    public static initWithOwner(owner: WeakRef<ImageSwipe>): UIScrollViewPagedDelegate {
+        const delegate = UIScrollViewPagedDelegate.new() as UIScrollViewPagedDelegate;
+        delegate._owner = owner;
+
+        return delegate;
+    }
+
+    private _owner: WeakRef<ImageSwipe>;
+
+    public scrollViewDidScroll(scrollView: UIScrollView) {
+        this._owner.get().isScrollingIn = true;
+    }
+
+    public scrollViewDidEndDecelerating(scrollView: UIScrollView) {
+        const pageWidth = scrollView.frame.size.width;
+        const owner = this._owner.get();
+
+        owner.isScrollingIn = false;
+        owner.pageNumber = Math.floor(Math.abs(scrollView.contentOffset.x) / pageWidth);
+    }
+
+}
+
+@ObjCClass(UIScrollViewDelegate)
+class UIScrollViewZoomDelegateImpl extends NSObject implements UIScrollViewDelegate {
+    public static initWithOwnerAndZoomView(owner: WeakRef<ImageSwipe>, zoomView: WeakRef<UIImageView>): UIScrollViewZoomDelegateImpl {
+        const delegate = UIScrollViewZoomDelegateImpl.new() as UIScrollViewZoomDelegateImpl;
+
+        delegate._zoomView = zoomView;
+        delegate._owner = owner;
+
+        return delegate;
+    }
+
+    private _zoomView: WeakRef<UIImageView>;
+    private _owner: WeakRef<ImageSwipe>;
+
+    public viewForZoomingInScrollView(scrollView: UIScrollView) {
+        return this._zoomView.get();
+    }
+
+    public scrollViewDidZoom(scrollView: UIScrollView) {
+        this._owner.get()._centerImageView(this._zoomView.get());        
+    }
+    
 }
