@@ -19,32 +19,9 @@ export abstract class ImageSwipeBase extends ScrollView {
 
     public static _imageCache: Cache;
 
-    private _items: any[];
-    private _pageNumber: number;
-    private _imageUrlProperty: string;
-
-    get items(): any[] {
-        return this._items;
-    }
-    set items(value: any[]) {
-        this._items = value;
-    }
-
-    get pageNumber(): number {
-        return this._pageNumber;
-    }
-
-    set pageNumber(num: number) {
-        this._pageNumber = num;
-    }
-
-    get imageUrlProperty(): string {
-        return this._imageUrlProperty;
-    }
-
-    set imageUrlProperty(propname: string) {
-        this._imageUrlProperty = propname;
-    }
+    public items: any[];
+    public pageNumber: number;
+    public imageUrlProperty: string;
 
     constructor() {
         super();
