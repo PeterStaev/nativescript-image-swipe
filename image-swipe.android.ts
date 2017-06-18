@@ -13,12 +13,23 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ***************************************************************************** */
+import { GestureTypes } from "ui/gestures";
 import { ImageSwipeBase, itemsProperty, pageNumberProperty } from "./image-swipe-common";
 
 // These constants specify the mode that we're in
 const MODE_NONE = 0;
 const MODE_DRAG = 1;
 const MODE_ZOOM = 2;
+const ALL_GESTURE_TYPES: GestureTypes[] = [
+    GestureTypes.doubleTap,
+    GestureTypes.longPress,
+    GestureTypes.pan,
+    GestureTypes.pinch,
+    GestureTypes.rotation,
+    GestureTypes.swipe,
+    GestureTypes.tap,
+    GestureTypes.touch
+];
 
 export * from "./image-swipe-common";
 
@@ -151,7 +162,7 @@ class ImageSwipePageAdapter extends android.support.v4.view.PagerAdapter {
         params.height = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
         params.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-        const imageView = new ZoomImageView(owner._context);
+        const imageView = new ZoomImageView(this.owner);
         imageView.setLayoutParams(params);
         imageView.setTag("Item" + position.toString());
 
@@ -233,9 +244,10 @@ class ZoomImageView extends android.widget.ImageView {
     private _orientationChangeListener: OrientationListener;
     private _onCanScrollChangeListener: OnCanScrollChangeListenerImplementation;
 
-    constructor(context: android.content.Context) {
-        super(context);
+    constructor(private _owner: WeakRef<ImageSwipe>) {
+        super(_owner.get()._context);
 
+        const context = _owner.get()._context;
         const that = new WeakRef(this);
         this._detector = new android.view.ScaleGestureDetector(context, new android.view.ScaleGestureDetector.OnScaleGestureListener({
             onScale: (detector: android.view.ScaleGestureDetector): boolean => {
@@ -261,7 +273,7 @@ class ZoomImageView extends android.widget.ImageView {
         this.reset();
     }
 
-    public onTouchEvent(event: android.view.MotionEvent): boolean {
+    public onTouchEvent(event: android.view.MotionEvent): boolean {       
         switch (event.getActionMasked()) {
             case android.view.MotionEvent.ACTION_DOWN:
                 this._mode = MODE_DRAG;
@@ -353,6 +365,13 @@ class ZoomImageView extends android.widget.ImageView {
         if ((this._mode === MODE_DRAG && this._dragged)
             || this._mode === MODE_ZOOM) {
             this.invalidate();
+        }
+
+        const owner = this._owner.get();
+        for (const gestureType of ALL_GESTURE_TYPES) {
+            for (const observer of owner.getGestureObservers(gestureType) || []) {
+                observer.androidOnTouchEvent(event);
+            }
         }
 
         return true;
