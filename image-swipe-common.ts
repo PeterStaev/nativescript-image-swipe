@@ -21,7 +21,7 @@ import { ImageSwipe as ImageSwipeDefinition } from ".";
 
 export * from "ui/scroll-view";
 
-export class ImageSwipeBase extends ScrollView implements ImageSwipeDefinition {
+export abstract class ImageSwipeBase extends ScrollView implements ImageSwipeDefinition {
     public static pageChangedEvent: string = "pageChanged";
 
     public static _imageCache: Cache;
@@ -41,6 +41,14 @@ export class ImageSwipeBase extends ScrollView implements ImageSwipeDefinition {
 
     public _getDataItem(index: number): any {
         return this.isItemsSourceIn ? (this.items as ItemsSource).getItem(index) : this.items[index];
+    }
+
+    public nextPage(): void {
+        this.pageNumber ++;
+    }
+
+    public prevPage(): void {
+        this.pageNumber --;
     }
 }
 

@@ -67,6 +67,14 @@ export class ImageSwipe extends ImageSwipeBase {
         // Coerce selected index after we have set items to native view.
         pageNumberProperty.coerce(this);
     }
+
+    public nextPage(): void {
+        this.pageNumber ++;
+    }
+
+    public prevPage(): void {
+        this.pageNumber --;
+    }
 }
 
 @Interfaces([android.support.v4.view.ViewPager.OnPageChangeListener])

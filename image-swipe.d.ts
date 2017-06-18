@@ -32,6 +32,9 @@ export class ImageSwipe extends ScrollView {
 
     public ios: any; /* UIScrollView */
     public android: any; /* android.support.v4.view.ViewPager */
+
+    public nextPage(): void;
+    public prevPage(): void;
 }
 
 export interface PageChangeEventData extends EventData {
