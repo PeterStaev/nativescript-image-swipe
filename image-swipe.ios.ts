@@ -257,9 +257,7 @@ export class ImageSwipe extends ImageSwipeBase {
         zoomScrollView.contentSize = imageView.frame.size;
         zoomScrollView.minimumZoomScale = minimumScale;
         zoomScrollView.zoomScale = minimumScale;
-        if (!this.allowZoom) {
-            zoomScrollView.maximumZoomScale = minimumScale;
-        }
+        zoomScrollView.maximumZoomScale = this.allowZoom ? 1.0 : minimumScale;
 
         this._centerImageView(imageView);
     }

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ***************************************************************************** */
 import { GestureTypes } from "ui/gestures";
-import { ImageSwipeBase, itemsProperty, pageNumberProperty } from "./image-swipe-common";
+import { ImageSwipeBase, allowZoomProperty, itemsProperty, pageNumberProperty } from "./image-swipe-common";
 
 // These constants specify the mode that we're in
 const MODE_NONE = 0;
@@ -66,6 +66,11 @@ export class ImageSwipe extends ImageSwipeBase {
 
     get android(): StateViewPager {
         return this.nativeView;
+    }
+
+    public [allowZoomProperty.setNative](value: boolean) {
+        const currentImage = this.nativeView.findViewWithTag("Item" + this.pageNumber) as ZoomImageView
+        currentImage.reset();
     }
 
     public [pageNumberProperty.setNative](value: number) {
