@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ***************************************************************************** */
 import { EventData } from "data/observable";
+import { CoercibleProperty, Property } from "ui/core/view";
 import { ItemsSource } from "ui/list-picker";
 import { ScrollView } from "ui/scroll-view";
 
@@ -33,3 +34,7 @@ export interface PageChangeEventData extends EventData {
     object: ImageSwipe;
     page: number;
 }
+
+export const pageNumberProperty: CoercibleProperty<ImageSwipe, number>;
+export const itemsProperty: Property<ImageSwipe, any[] | ItemsSource>;
+export const imageUrlPropertyProperty: Property<ImageSwipe, string>;

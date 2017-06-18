@@ -88,6 +88,11 @@ class ImageSwipePageChangeListener extends java.lang.Object implements android.s
             page: index
         });
 
+        // For Angular it happens that this is triggered before the native view is initialized
+        if (!owner.android) {
+            return;
+        }
+        
         let preloadedImageView: ZoomImageView;
 
         preloadedImageView = owner.android.findViewWithTag("Item" + (index - 1).toString()) as ZoomImageView;
