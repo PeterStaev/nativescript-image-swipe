@@ -17,6 +17,11 @@ import { EventData } from "data/observable";
 import { CoercibleProperty, Property } from "ui/core/view";
 import { ItemsSource } from "ui/list-picker";
 import { ScrollView } from "ui/scroll-view";
+import { Cache } from "ui/image-cache";
+
+export class ImageSwipeBase {
+    public static _imageCache: Cache;
+}
 
 export class ImageSwipe extends ScrollView {
     public static pageChangedEvent: string;
