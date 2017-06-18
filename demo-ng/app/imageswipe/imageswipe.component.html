@@ -1,7 +1,7 @@
 <ActionBar title="Demo NG" class="action-bar">
 </ActionBar>
 <GridLayout>
-    <ImageSwipe [items]="items" imageUrlProperty="imageUrl" 
+    <ImageSwipe [items]="items" imageUrlProperty="imageUrl" (tap)="tapped()"
                 [pageNumber]="pageNumber" (pageChanged)="pageChanged($event)" backgroundColor="#000000">
     </ImageSwipe>
 </GridLayout>

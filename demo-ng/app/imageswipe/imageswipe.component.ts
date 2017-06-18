@@ -18,6 +18,10 @@ export class ImageSwipeComponent implements OnInit {
         this.items.push({ imageUrl: "http://voices.nationalgeographic.com/files/2013/04/NationalGeographic_1329449.jpg" });
     }
 
+    public tapped() {
+        console.log("tapped");
+    }
+
     public pageChanged(e: PageChangeEventData) {
         console.log(`Page changed to ${e.page}.`);
     }
