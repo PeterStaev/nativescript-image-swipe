@@ -69,7 +69,7 @@ export class ImageSwipe extends ImageSwipeBase {
     }
 
     public [allowZoomProperty.setNative](value: boolean) {
-        const currentImage = this.nativeView.findViewWithTag("Item" + this.pageNumber) as ZoomImageView
+        const currentImage = this.nativeView.findViewWithTag("Item" + this.pageNumber) as ZoomImageView;
         currentImage.reset();
     }
 
