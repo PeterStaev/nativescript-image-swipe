@@ -162,7 +162,7 @@ class ImageSwipePageAdapter extends android.support.v4.view.PagerAdapter {
         params.height = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
         params.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-        const imageView = new ZoomImageView(owner, owner._context);
+        const imageView = new ZoomImageView(this.owner);
         imageView.setLayoutParams(params);
         imageView.setTag("Item" + position.toString());
 
@@ -244,9 +244,10 @@ class ZoomImageView extends android.widget.ImageView {
     private _orientationChangeListener: OrientationListener;
     private _onCanScrollChangeListener: OnCanScrollChangeListenerImplementation;
 
-    constructor(private _host: ImageSwipe, context: android.content.Context) {
-        super(context);
+    constructor(private _owner: WeakRef<ImageSwipe>) {
+        super(_owner.get()._context);
 
+        const context = _owner.get()._context;
         const that = new WeakRef(this);
         this._detector = new android.view.ScaleGestureDetector(context, new android.view.ScaleGestureDetector.OnScaleGestureListener({
             onScale: (detector: android.view.ScaleGestureDetector): boolean => {
@@ -366,8 +367,9 @@ class ZoomImageView extends android.widget.ImageView {
             this.invalidate();
         }
 
+        const owner = this._owner.get();
         for (const gestureType of ALL_GESTURE_TYPES) {
-            for (const observer of this._host.getGestureObservers(gestureType) || []) {
+            for (const observer of owner.getGestureObservers(gestureType) || []) {
                 observer.androidOnTouchEvent(event);
             }
         }
