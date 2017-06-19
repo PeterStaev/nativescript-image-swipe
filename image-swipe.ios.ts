@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ***************************************************************************** */
 import * as utils from "utils/utils";
-import { ImageSwipeBase, itemsProperty, pageNumberProperty } from "./image-swipe-common";
+import { ImageSwipeBase, allowZoomProperty, itemsProperty, pageNumberProperty } from "./image-swipe-common";
 
 export * from "./image-swipe-common";
 
@@ -64,6 +64,14 @@ export class ImageSwipe extends ImageSwipeBase {
                 if (this._views[loop]) {
                     this._positionImageView(this._views[loop].imageView);
                 }
+            }
+        }
+    }
+
+    public [allowZoomProperty.setNative](value: boolean) {
+        for (const viewHolder of this._views) {
+            if (viewHolder) {
+                this._positionImageView(viewHolder.imageView);
             }
         }
     }
@@ -184,7 +192,7 @@ export class ImageSwipe extends ImageSwipeBase {
         zoomScrollView = UIScrollView.alloc().init();
         zoomScrollView.maximumZoomScale = 1;
         zoomScrollView.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
-
+        
         imageView = UIImageView.alloc().init();
 
         zoomScrollView.delegate = UIScrollViewZoomDelegateImpl.initWithOwnerAndZoomView(new WeakRef(this), new WeakRef(imageView));
@@ -249,6 +257,7 @@ export class ImageSwipe extends ImageSwipeBase {
         zoomScrollView.contentSize = imageView.frame.size;
         zoomScrollView.minimumZoomScale = minimumScale;
         zoomScrollView.zoomScale = minimumScale;
+        zoomScrollView.maximumZoomScale = this.allowZoom ? 1.0 : minimumScale;
 
         this._centerImageView(imageView);
     }

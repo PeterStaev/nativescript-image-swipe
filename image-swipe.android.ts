@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ***************************************************************************** */
 import { GestureTypes } from "ui/gestures";
-import { ImageSwipeBase, itemsProperty, pageNumberProperty } from "./image-swipe-common";
+import { ImageSwipeBase, allowZoomProperty, itemsProperty, pageNumberProperty } from "./image-swipe-common";
 
 // These constants specify the mode that we're in
 const MODE_NONE = 0;
@@ -66,6 +66,15 @@ export class ImageSwipe extends ImageSwipeBase {
 
     get android(): StateViewPager {
         return this.nativeView;
+    }
+
+    public [allowZoomProperty.setNative](value: boolean) {
+        const currentImage = this.nativeView.findViewWithTag("Item" + this.pageNumber) as ZoomImageView;
+        if (currentImage) {
+            // reset if there is a current image. This method is called if the initial value differs from the defaultValue (true) 
+            // before an actual image view has been created
+            currentImage.reset();
+        }
     }
 
     public [pageNumberProperty.setNative](value: number) {
@@ -274,100 +283,102 @@ class ZoomImageView extends android.widget.ImageView {
     }
 
     public onTouchEvent(event: android.view.MotionEvent): boolean {       
-        switch (event.getActionMasked()) {
-            case android.view.MotionEvent.ACTION_DOWN:
-                this._mode = MODE_DRAG;
-
-                // We assign the current X and Y coordinate of the finger to startX and startY minus the previously translated
-                // amount for each coordinates This works even when we are translating the first time because the initial
-                // values for these two variables is zero.
-                this._startX = event.getX();
-                this._startY = event.getY();
-                break;
-
-            case android.view.MotionEvent.ACTION_MOVE:
-                const scaleFactor = this.getScaleFactor();
-                let translateX = this._startX - event.getX();
-                let translateY = this._startY - event.getY();
-                const totalTranslateX = this.getTotalTranslateX();
-                const totalTranslateY = this.getTotalTranslateY();
-                const height = this.getHeight();
-                const width = this.getWidth();
-                const imageHeight = this._image.getHeight();
-                const imageWidth = this._image.getWidth();
-                let canScroll = false;
-
-                if (Math.max(0, (width - (imageWidth * scaleFactor)) / 2) !== 0) { // Not scaled large enough, we automatically center it in onDraw
-                    translateX = 0;
-                    canScroll = true;
-                }
-                else if (totalTranslateX + translateX < 0) { // outside left bounds
-                    translateX = -totalTranslateX;
-                    canScroll = true;
-                }
-                else if (totalTranslateX + translateX + width > imageWidth * scaleFactor) { // Outside right bounds
-                    translateX = (imageWidth * scaleFactor) - width - totalTranslateX;
-                    canScroll = true;
-                }
-
-                if (this._onCanScrollChangeListener) {
-                    this._onCanScrollChangeListener.onCanScrollChanged(canScroll);
-                }
-
-                if (Math.max(0, (height - (imageHeight * scaleFactor)) / 2) !== 0) { // Not scaled large enough, we automatically center it in onDraw
-                    translateY = 0;
-                }
-                else if (totalTranslateY + translateY < 0) { // outside lower bounds
-                    translateY = -totalTranslateY;
-                }
-                else if (totalTranslateY + translateY + height > imageHeight * scaleFactor) { // Outside upper bounds
-                    translateY = (imageHeight * scaleFactor) - height - totalTranslateY;
-                }
-
-                if (translateX !== 0 || translateY !== 0) {
-                    this._dragged = true;
-                }
-
-                this.setTranslateX(translateX);
-                this.setTranslateY(translateY);
-
-                break;
-
-            case android.view.MotionEvent.ACTION_POINTER_DOWN:
-                this._mode = MODE_ZOOM;
-                break;
-
-            case android.view.MotionEvent.ACTION_UP:
-                this._mode = MODE_NONE;
-                this._dragged = false;
-
-                // All fingers went up, so let's save the value of translateX and translateY into previousTranslateX and
-                // previousTranslate
-                this.setTotalTranslateX(this.getTotalTranslateX() + this.getTranslateX());
-                this.setTotalTranslateY(this.getTotalTranslateY() + this.getTranslateY());
-                this.setTranslateX(0);
-                this.setTranslateY(0);
-                break;
-
-            case android.view.MotionEvent.ACTION_POINTER_UP:
-                this._mode = MODE_DRAG;
-
-                // This is not strictly necessary; we save the value of translateX and translateY into previousTranslateX
-                // and previousTranslateY when the second finger goes up
-                this.setTotalTranslateX(this.getTotalTranslateX() + this.getTranslateX());
-                this.setTotalTranslateY(this.getTotalTranslateY() + this.getTranslateY());
-                this.setTranslateX(0);
-                this.setTranslateY(0);
-                break;
-        }
-
-        this._detector.onTouchEvent(event);
-        if ((this._mode === MODE_DRAG && this._dragged)
-            || this._mode === MODE_ZOOM) {
-            this.invalidate();
-        }
-
         const owner = this._owner.get();
+        if (owner.allowZoom) {
+            switch (event.getActionMasked()) {
+                case android.view.MotionEvent.ACTION_DOWN:
+                    this._mode = MODE_DRAG;
+
+                    // We assign the current X and Y coordinate of the finger to startX and startY minus the previously translated
+                    // amount for each coordinates This works even when we are translating the first time because the initial
+                    // values for these two variables is zero.
+                    this._startX = event.getX();
+                    this._startY = event.getY();
+                    break;
+
+                case android.view.MotionEvent.ACTION_MOVE:
+                    const scaleFactor = this.getScaleFactor();
+                    let translateX = this._startX - event.getX();
+                    let translateY = this._startY - event.getY();
+                    const totalTranslateX = this.getTotalTranslateX();
+                    const totalTranslateY = this.getTotalTranslateY();
+                    const height = this.getHeight();
+                    const width = this.getWidth();
+                    const imageHeight = this._image.getHeight();
+                    const imageWidth = this._image.getWidth();
+                    let canScroll = false;
+
+                    if (Math.max(0, (width - (imageWidth * scaleFactor)) / 2) !== 0) { // Not scaled large enough, we automatically center it in onDraw
+                        translateX = 0;
+                        canScroll = true;
+                    }
+                    else if (totalTranslateX + translateX < 0) { // outside left bounds
+                        translateX = -totalTranslateX;
+                        canScroll = true;
+                    }
+                    else if (totalTranslateX + translateX + width > imageWidth * scaleFactor) { // Outside right bounds
+                        translateX = (imageWidth * scaleFactor) - width - totalTranslateX;
+                        canScroll = true;
+                    }
+
+                    if (this._onCanScrollChangeListener) {
+                        this._onCanScrollChangeListener.onCanScrollChanged(canScroll);
+                    }
+
+                    if (Math.max(0, (height - (imageHeight * scaleFactor)) / 2) !== 0) { // Not scaled large enough, we automatically center it in onDraw
+                        translateY = 0;
+                    }
+                    else if (totalTranslateY + translateY < 0) { // outside lower bounds
+                        translateY = -totalTranslateY;
+                    }
+                    else if (totalTranslateY + translateY + height > imageHeight * scaleFactor) { // Outside upper bounds
+                        translateY = (imageHeight * scaleFactor) - height - totalTranslateY;
+                    }
+
+                    if (translateX !== 0 || translateY !== 0) {
+                        this._dragged = true;
+                    }
+
+                    this.setTranslateX(translateX);
+                    this.setTranslateY(translateY);
+
+                    break;
+
+                case android.view.MotionEvent.ACTION_POINTER_DOWN:
+                    this._mode = MODE_ZOOM;
+                    break;
+
+                case android.view.MotionEvent.ACTION_UP:
+                    this._mode = MODE_NONE;
+                    this._dragged = false;
+
+                    // All fingers went up, so let's save the value of translateX and translateY into previousTranslateX and
+                    // previousTranslate
+                    this.setTotalTranslateX(this.getTotalTranslateX() + this.getTranslateX());
+                    this.setTotalTranslateY(this.getTotalTranslateY() + this.getTranslateY());
+                    this.setTranslateX(0);
+                    this.setTranslateY(0);
+                    break;
+
+                case android.view.MotionEvent.ACTION_POINTER_UP:
+                    this._mode = MODE_DRAG;
+
+                    // This is not strictly necessary; we save the value of translateX and translateY into previousTranslateX
+                    // and previousTranslateY when the second finger goes up
+                    this.setTotalTranslateX(this.getTotalTranslateX() + this.getTranslateX());
+                    this.setTotalTranslateY(this.getTotalTranslateY() + this.getTranslateY());
+                    this.setTranslateX(0);
+                    this.setTranslateY(0);
+                    break;
+            }
+
+            this._detector.onTouchEvent(event);
+            if ((this._mode === MODE_DRAG && this._dragged)
+                || this._mode === MODE_ZOOM) {
+                this.invalidate();
+            }
+        }
+
         for (const gestureType of ALL_GESTURE_TYPES) {
             for (const observer of owner.getGestureObservers(gestureType) || []) {
                 observer.androidOnTouchEvent(event);

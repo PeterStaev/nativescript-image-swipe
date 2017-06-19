@@ -30,6 +30,7 @@ export class ImageSwipeBase extends ScrollView implements ImageSwipeDefinition {
     public pageNumber: number;
     public imageUrlProperty: string;
     public isItemsSourceIn: boolean;
+    public allowZoom: boolean;
 
     constructor() {
         super();
@@ -83,3 +84,9 @@ export const imageUrlPropertyProperty = new Property<ImageSwipeBase, string>({
     defaultValue: ""
 });
 imageUrlPropertyProperty.register(ImageSwipeBase);
+
+export const allowZoomProperty = new Property<ImageSwipeBase, boolean>({
+    name: "allowZoom",
+    defaultValue: true
+});
+allowZoomProperty.register(ImageSwipeBase);
