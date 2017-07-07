@@ -481,7 +481,10 @@ class OrientationListener extends android.view.OrientationEventListener {
     }
 
     public onOrientationChanged(orientation: number) {
-        this._zoomImageView.get().reset(true);
+        const zoomImageView: ZoomImageView = this._zoomImageView.get();
+        if (zoomImageView) {
+            zoomImageView.reset(true);
+        }
     }
 }
 
