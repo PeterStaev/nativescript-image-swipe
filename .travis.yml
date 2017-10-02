@@ -1,8 +1,92 @@
-language: node_js
-node_js:
-    6.10.3
-before_script:
-    - npm install
-script:
-    ./node_modules/.bin/grunt build
+sudo: false
 
+android:
+  components:
+    - tools
+    - platform-tools
+    - build-tools-25.0.2
+    - android-23
+    - android-25
+    - extra-android-m2repository
+
+before_cache:
+    - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock 
+
+cache:
+    directories:
+        - .nvm
+        - $HOME/.gradle/caches/
+        - $HOME/.gradle/wrapper/
+
+install:
+    - echo no | npm install -g nativescript
+    - tns usage-reporting disable
+    - tns error-reporting disable
+    - echo no | npm install -g grunt-cli
+    - npm install
+    - grunt compile
+
+matrix:
+  include:
+    - stage: lint
+      language: node_js
+      os: linux
+      node_js: "6"
+      script: grunt lint
+
+    - stage: build
+      language: android
+      os: linux
+      env: 
+        - Android="25"
+      jdk: oraclejdk8
+      before_install: nvm install 6.10.3
+      script: "grunt ci:build:android"
+
+    - stage: build
+      os: osx
+      env: 
+        - iOS="10.3"
+        - Xcode="8.3"
+      osx_image: xcode8.3
+      language: node_js 
+      node_js: "6"
+      jdk: oraclejdk8
+      script: "grunt ci:build:ios"
+
+    - stage: webpack
+      language: android
+      os: linux
+      env:
+        - Android="25"
+        - Platform="Android"
+      jdk: oraclejdk8
+      before_install: nvm install 6.10.3
+      script: "grunt ci:webpack:android"
+    
+    - stage: webpack
+      os: osx
+      env: 
+        - iOS="10.3"
+        - Xcode="8.3"
+        - Platform="iOS"
+      osx_image: xcode8.3
+      language: node_js 
+      node_js: "6"
+      jdk: oraclejdk8
+      script: "grunt ci:webpack:ios"
+
+    - stage: deploy
+      if: branch = release
+      language: node_js 
+      node_js: "6"
+      before_deploy:
+          - cd bin/dist
+      deploy:
+        provider: npm
+        email: "peter@tangrasoft.com"
+        api_key:
+            secure: "DG4qp4h8z3Z+xklcUVkMmlES0bDxkNhXc1MMJeXSnDXRmsWmGFSvnWXGZWJF04fkCQdtIcG6vKanxpTklGKm7IKyaGliG3lwHx9mI5pp/u28A7fbq6DQ5/k72jw4EOAYZ3sAv5J8hy7152f+OEeYiN1hzbmge4t5AXDg+PreF204CuegvuZyqGU+R3s9xvSIzd3AR+M/Kpc+eI5ti1nBqyfKO7N1Q6RUp70qkGmglNecLownHkmaaEvurV47vH98KiK3i6gaVArJX/5iaujmHWGgaSHGHuFMf1X0lVsjmvACI9d5xTeqJyCxc16HLJ+MghlJ0XcEo93T5CZoXMgOoVb5jBkAv1MIXBUmvgi2fpceyuU+OVCLM8McjyZHZiSoFt7yMyEuJvrrfqbQ2jIGb/+XHY0P80EciUnKFO8IYvaXla6olDmY5y9XnivqoJqemidlMC4v+7fv6Pg/JPpxDkFMa2I2JcA4HBnZ3pv60aO962xvHH6m1O32+F/rOhYfiRzY34WlbCZRPMwcRY/ZxjEzdSjUHVd6tClrOCL/LqaCZXkBEKzNpglnvahSJaKyXTDzXMeWRuvYSTgrttu97FiC1CYEl/IhctS8EQE1rpGHt8DjYiOd54Ypxbrh6ZJ8VBQ26CMsBbil5DDaD9ysfPFOEAQRPuw2KaQcqNvv13k="
+        skip_cleanup: true
+        on:
+          branch: release

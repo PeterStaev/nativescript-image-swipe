@@ -54,5 +54,7 @@ node_modules
 *.tmp.*
 platforms
 demo/lib
+demo-ng/lib
 hooks
 *.log
+report

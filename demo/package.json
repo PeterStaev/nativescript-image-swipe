@@ -5,28 +5,46 @@
   "repository": "<fill-your-repository-here>",
   "nativescript": {
     "id": "com.tangrainc.imageswipedemo",
-    "tns-ios": {
-      "version": "3.0.1"
-    },
     "tns-android": {
-      "version": "3.0.1"
+      "version": "3.2.0"
+    },
+    "tns-ios": {
+      "version": "3.2.0"
     }
   },
   "scripts": {
     "android": "npm uninstall nativescript-image-swipe && tns run android --emulator",
-    "ios": "npm uninstall nativescript-image-swipe && tns run ios --emulator"
+    "ios": "npm uninstall nativescript-image-swipe && tns run ios --emulator",
+    "ns-bundle": "ns-bundle",
+    "publish-ios-bundle": "npm run ns-bundle --ios --publish-app",
+    "generate-android-snapshot": "generate-android-snapshot --targetArchs arm,arm64,ia32 --install",
+    "start-android-bundle": "npm run ns-bundle --android --run-app",
+    "start-ios-bundle": "npm run ns-bundle --ios --run-app",
+    "build-android-bundle": "npm run ns-bundle --android --build-app",
+    "build-ios-bundle": "npm run ns-bundle --ios --build-app"
   },
   "dependencies": {
     "nativescript-image-swipe": "file:../bin/dist",
-    "tns-core-modules": "^3.0.1"
+    "nativescript-theme-core": "^1.0.4",
+    "tns-core-modules": "^3.2.0"
   },
   "devDependencies": {
+    "awesome-typescript-loader": "~3.1.3",
     "babel-traverse": "6.24.1",
     "babel-types": "6.24.1",
     "babylon": "6.17.0",
+    "copy-webpack-plugin": "~4.0.1",
+    "extract-text-webpack-plugin": "~3.0.0",
     "lazy": "1.0.11",
-    "nativescript-dev-android-snapshot": "^0.*.*",
+    "nativescript-css-loader": "~0.26.0",
     "nativescript-dev-typescript": "~0.4.5",
-    "typescript": "~2.2.0"
+    "nativescript-dev-webpack": "^0.8.0",
+    "nativescript-worker-loader": "~0.8.1",
+    "raw-loader": "~0.5.1",
+    "resolve-url-loader": "~2.1.0",
+    "typescript": "~2.2.0",
+    "webpack": "~3.2.0",
+    "webpack-bundle-analyzer": "^2.8.2",
+    "webpack-sources": "~1.0.1"
   }
 }

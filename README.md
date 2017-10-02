@@ -16,8 +16,8 @@ Run the following command from the root of your project:
 
 This command automatically installs the necessary files, as well as stores nativescript-image-swipe as a dependency in your project's package.json file.
 
-## Usage
-You need to add `xmlns:is="nativescript-image-swipe"` to your page tag, and then simply use `<is:ImageSwipe/>` in order to add the widget to your page.
+## Configuration
+There is no additional configuration needed!
 
 ## API
 
@@ -45,8 +45,11 @@ Gets or sets the currently visible image.
 * **imageUrlProperty** - *string*  
 Gets or sets the property inside the items' object that defines the Url from where to load the images
 
+* **allowZoom** - *boolean (default: true)*
+Gets or sets whether zoom is enabled
 
-## Example
+## Usage
+You need to add `xmlns:is="nativescript-image-swipe"` to your page tag, and then simply use `<is:ImageSwipe/>` in order to add the widget to your page.
 ```xml
 <!-- test-page.xml -->
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" xmlns:is="nativescript-image-swipe" navigatingTo="navigatingTo">
@@ -90,7 +93,9 @@ export function pageChanged(e: PageChangeEventData) {
 }
 ```
 
-## Angular Example
+## Usage in Angular
+In order to use the `ImageSwipe` you must register it in **BOTH** your `main.ts` and `main.aot.ts`!
+
 ```typescript
 // main.ts
 import { platformNativeScriptDynamic } from "nativescript-angular/platform";
@@ -164,3 +169,20 @@ module.exports = function (platform, destinationApp) {
    //......
 }
 ```
+
+## Demos
+This repository includes both Angular and plain NativeScript demos. In order to run those execute the following in your shell:
+```shell
+$ git clone https://github.com/peterstaev/nativescript-image-swipe
+$ cd nativescript-image-swipe
+$ npm install
+$ npm run demo-ios
+```
+This will run the plain NativeScript demo project on iOS. If you want to run it on Android simply use the `-android` instead of the `-ios` sufix. 
+
+If you want to run the Angular demo simply use the `demo-ng-` prefix instead of `demo-`. 
+
+## Donate
+`bitcoin:14fjysmpwLvSsAskvLASw6ek5XfhTzskHC`
+
+![Donate](https://www.tangrainc.com/qr.png)
