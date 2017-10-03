@@ -6,6 +6,7 @@ export default [
     "UIScrollViewZoomDelegateImpl",
 
     // Android
+    "ImageSwipePageChangeListener",
     "StateViewPager",
     "ImageSwipePageAdapter",
     "ZoomImageView",
