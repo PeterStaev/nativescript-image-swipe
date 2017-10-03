@@ -45,7 +45,7 @@ Gets or sets the currently visible image.
 * **imageUrlProperty** - *string*  
 Gets or sets the property inside the items' object that defines the Url from where to load the images
 
-* **allowZoom** - *boolean (default: true)*
+* **allowZoom** - *boolean (default: true)*  
 Gets or sets whether zoom is enabled
 
 ## Usage
