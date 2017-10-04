@@ -58,3 +58,4 @@ demo-ng/lib
 hooks
 *.log
 report
+!webpack.*.js
