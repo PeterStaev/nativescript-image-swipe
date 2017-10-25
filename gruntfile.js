@@ -45,12 +45,8 @@
             }
         },
         exec: {
-            tsCompile: {
-                cmd: "./node_modules/.bin/tsc --project tsconfig.json --outDir " + localConfig.outDir
-            },
-            tslint: {
-                cmd: "./node_modules/.bin/tslint --project tsconfig.json --type-check"
-            },
+            tsCompile: "npm run tsc -- --outDir " + localConfig.outDir,
+            tslint: "npm run tslint",
             checkRequiredReadmeSection: {
                 cwd: "bin/dist",
                 cmd: function (section) {
