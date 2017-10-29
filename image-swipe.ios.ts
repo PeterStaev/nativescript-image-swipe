@@ -23,6 +23,7 @@ export class ImageSwipe extends ImageSwipeBase {
 
     private _views: Array<{ view: UIView; imageView: UIImageView; zoomDelegate: UIScrollViewZoomDelegateImpl }>;
     private _delegate: UIScrollViewPagedDelegate;
+    private _animateLoadPageValue: boolean = false;
 
     constructor() {
         super();
@@ -93,7 +94,7 @@ export class ImageSwipe extends ImageSwipeBase {
         const pageWidth = scrollView.frame.size.width;
 
         if (!this.isScrollingIn) {
-            scrollView.contentOffset = CGPointMake(value * pageWidth, 0);
+            scrollView.setContentOffsetAnimated(CGPointMake(value * pageWidth, 0), this._animateLoadPage);
         }
 
         for (let loop = 0; loop < value - 1; loop++) {
@@ -141,6 +142,26 @@ export class ImageSwipe extends ImageSwipeBase {
 
         contentsFrame.origin = CGPointMake(newPosition.x, newPosition.y);
         imageView.frame = contentsFrame;
+    }
+
+    public nextPage(): void {
+        this._animateLoadPage = true;
+        super.nextPage();
+    }
+
+    public prevPage(): void {
+        this._animateLoadPage = true;
+        super.prevPage();
+    }
+
+    private get _animateLoadPage(): boolean {
+        const current: boolean = this._animateLoadPageValue;
+        this._animateLoadPageValue = false;
+        return current;
+    }
+
+    private set _animateLoadPage(value: boolean) {
+        this._animateLoadPageValue = value;
     }
 
     private _resizeNativeViews(page: number) {
@@ -307,6 +328,10 @@ class UIScrollViewPagedDelegate extends NSObject implements UIScrollViewDelegate
 
     public scrollViewDidScroll(scrollView: UIScrollView) {
         this._owner.get().isScrollingIn = true;
+    }
+
+    public scrollViewDidEndScrollingAnimation(scrollView: UIScrollView) {
+        this._owner.get().isScrollingIn = false;
     }
 
     public scrollViewDidEndDecelerating(scrollView: UIScrollView) {
