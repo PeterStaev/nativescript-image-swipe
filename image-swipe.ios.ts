@@ -48,6 +48,7 @@ export class ImageSwipe extends ImageSwipeBase {
     }
 
     public onLayout(left: number, top: number, right: number, bottom: number) {
+        // console.log(`LAYOUT ${left} ${top} ${right} ${bottom}`);
         super.onLayout(left, top, right, bottom);
 
         if (this.items && this.items.length > 0) {
@@ -55,9 +56,8 @@ export class ImageSwipe extends ImageSwipeBase {
 
             this._calcScrollViewContentSize();
 
-            if (!this.isScrollingIn) {
-                scrollView.setContentOffsetAnimated(CGPointMake(this.pageNumber * utils.layout.toDeviceIndependentPixels(this.getMeasuredWidth()), 0), false);
-            }
+            // console.log(`setContentOffsetAnimated ${this.pageNumber} * ${utils.layout.toDeviceIndependentPixels(this.getMeasuredWidth())}`);
+            scrollView.setContentOffsetAnimated(CGPointMake(this.pageNumber * utils.layout.toDeviceIndependentPixels(this.getMeasuredWidth()), 0), false);
 
             for (let loop = Math.max(0, this.pageNumber - 1); loop <= Math.min(this.pageNumber + 1, this.items.length - 1); loop++) {
                 this._resizeNativeViews(loop);
@@ -159,6 +159,7 @@ export class ImageSwipe extends ImageSwipeBase {
         frame.origin = CGPointMake(frame.size.width * page, 0);
         view.frame = frame;
 
+        // console.log(`_resizeNativeViews ${frame.size.width}, ${frame.size.height}`);
         for (let loop = 0; loop < view.subviews.count; loop++) {
             const subview = view.subviews.objectAtIndex(loop);
             subview.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
@@ -192,7 +193,7 @@ export class ImageSwipe extends ImageSwipeBase {
         zoomScrollView = UIScrollView.alloc().init();
         zoomScrollView.maximumZoomScale = 1;
         zoomScrollView.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
-        
+
         imageView = UIImageView.alloc().init();
 
         zoomScrollView.delegate = UIScrollViewZoomDelegateImpl.initWithOwnerAndZoomView(new WeakRef(this), new WeakRef(imageView));
@@ -290,6 +291,7 @@ export class ImageSwipe extends ImageSwipeBase {
         const width = utils.layout.toDeviceIndependentPixels(this.getMeasuredWidth());
         const height = utils.layout.toDeviceIndependentPixels(this.getMeasuredHeight());
 
+        // console.log(`_calcScrollViewContentSize ${width}, ${height}`);
         scrollView.contentSize = CGSizeMake(this.items.length * width, height);
     }
 }

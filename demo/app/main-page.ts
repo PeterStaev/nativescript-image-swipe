@@ -11,14 +11,14 @@ export function navigatingTo(args: EventData) {
     const items = new ObservableArray();
 
     items.push({ imageUrl: "http://press.nationalgeographic.com/files/2013/08/NationalGeographic_1184784-smaller.jpg" });
-    items.push({ imageUrl: "http://ngm.nationalgeographic.com/2011/12/tigers/img/14-mother-rests-with-cub_1600.jpg" });
-    items.push({ imageUrl: "http://ngm.nationalgeographic.com/wallpaper/img/2013/04/01-manatees-swim-close-to-surface_1600.jpg" });
-    items.push({ imageUrl: "http://ngm.nationalgeographic.com/wallpaper/img/2013/08/12-cboy-zebra-feast_1600.jpg" });
-    items.push({ imageUrl: "http://voices.nationalgeographic.com/files/2013/04/NationalGeographic_1329449.jpg" });
+    items.push({ imageUrl: "https://www.nationalgeographic.com/content/dam/photography/rights-exempt/best-of-photo-of-the-day/2017/animals/01_pod-best-animals.jpg" });
+    items.push({ imageUrl: "https://news.nationalgeographic.com/content/dam/news/2016/02/24/01highanimals.jpg" });
+    items.push({ imageUrl: "https://kids.nationalgeographic.com/content/dam/kids/photos/games/screen-shots/More%20Games/A-G/babyanimal_open.ngsversion.1429194155981.jpg" });
+    items.push({ imageUrl: "https://kids.nationalgeographic.com/content/dam/kids/photos/animals/Mammals/H-P/koala-closeup-tree.adapt.945.1.jpg" });
 
     viewModel = new Observable();
     viewModel.set("items", items);
-    viewModel.set("pageNumber", 3);
+    viewModel.set("pageNumber", 0);
 
     page.bindingContext = viewModel;
 }
