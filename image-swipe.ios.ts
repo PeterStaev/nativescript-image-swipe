@@ -82,6 +82,10 @@ export class ImageSwipe extends ImageSwipeBase {
 
         // Coerce selected index after we have set items to native view.
         pageNumberProperty.coerce(this);
+        
+        if (this.pageNumber !== undefined && this.pageNumber !== null) {
+            this._loadCurrentPage(this.pageNumber);
+        }
     }
 
     public [pageNumberProperty.setNative](value: number) {
@@ -89,29 +93,7 @@ export class ImageSwipe extends ImageSwipeBase {
             return;
         }
 
-        const scrollView: UIScrollView = this.ios;
-        const pageWidth = scrollView.frame.size.width;
-
-        if (!this.isScrollingIn) {
-            scrollView.contentOffset = CGPointMake(value * pageWidth, 0);
-        }
-
-        for (let loop = 0; loop < value - 1; loop++) {
-            this._purgePage(loop);
-        }
-
-        // Load current page and one ahead one behind for caching purposes
-        this._loadPage(value); // Always load the current page first
-        if (value - 1 >= 0) {
-            this._loadPage(value - 1);
-        }
-        if (value + 1 < this.items.length) {
-            this._loadPage(value + 1);
-        }
-
-        for (let loop = value + 2; loop < this.items.length; loop++) {
-            this._purgePage(loop);
-        }
+        this._loadCurrentPage(value);
 
         this.notify({
             eventName: ImageSwipeBase.pageChangedEvent,
@@ -141,6 +123,32 @@ export class ImageSwipe extends ImageSwipeBase {
 
         contentsFrame.origin = CGPointMake(newPosition.x, newPosition.y);
         imageView.frame = contentsFrame;
+    }
+
+    private _loadCurrentPage(page: number) {
+        const scrollView: UIScrollView = this.ios;
+        const pageWidth = scrollView.frame.size.width;
+
+        if (!this.isScrollingIn) {
+            scrollView.contentOffset = CGPointMake(page * pageWidth, 0);
+        }
+
+        for (let loop = 0; loop < page - 1; loop++) {
+            this._purgePage(loop);
+        }
+
+        // Load current page and one ahead one behind for caching purposes
+        this._loadPage(page); // Always load the current page first
+        if (page - 1 >= 0) {
+            this._loadPage(page - 1);
+        }
+        if (page + 1 < this.items.length) {
+            this._loadPage(page + 1);
+        }
+
+        for (let loop = page + 2; loop < this.items.length; loop++) {
+            this._purgePage(loop);
+        }
     }
 
     private _resizeNativeViews(page: number) {
