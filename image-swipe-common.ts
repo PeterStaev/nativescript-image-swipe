@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ***************************************************************************** */
-import { CoercibleProperty, Property } from "ui/core/view";
+import { CSSType, CoercibleProperty, Property } from "ui/core/view";
 import { Cache } from "ui/image-cache";
 import { ItemsSource } from "ui/list-picker";
 import { ScrollView } from "ui/scroll-view";
@@ -21,6 +21,7 @@ import { ImageSwipe as ImageSwipeDefinition } from ".";
 
 export * from "ui/scroll-view";
 
+@CSSType("ImageSwipe")
 export class ImageSwipeBase extends ScrollView implements ImageSwipeDefinition {
     public static pageChangedEvent: string = "pageChanged";
 

@@ -58,4 +58,5 @@ demo-ng/lib
 hooks
 *.log
 report
+.tmp_backup
 !webpack.*.js

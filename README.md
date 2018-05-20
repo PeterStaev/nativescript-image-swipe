@@ -145,31 +145,6 @@ export class ImageSwipeComponent implements OnInit {
 }
 ```
 
-## Working with Webpack+Uglify
-In case you are uing webpack and also are minifying/uglifying your code, there are some specific names that should be excluded from the uglification for the widget to work properly. The ImageSwipe widget exports those and you need to add them to the mangle exclude option of the uglifyjs plugin in the `webpack.common.js` file:
-```js
-var imageSwipeMangleExcludes = require("nativescript-image-swipe/uglify-mangle-excludes").default;
-//......
-module.exports = function (platform, destinationApp) {
-    //......
-    if (process.env.npm_config_uglify) {
-        plugins.push(new webpack.LoaderOptionsPlugin({
-            minimize: true
-        }));
-
-        //Work around an Android issue by setting compress = false
-        var compress = platform !== "android";
-        plugins.push(new webpack.optimize.UglifyJsPlugin({
-            mangle: {
-                except: nsWebpack.uglifyMangleExcludes.concat(imageSwipeMangleExcludes),
-            },
-            compress: compress,
-        }));
-    }
-   //......
-}
-```
-
 ## Demos
 This repository includes both Angular and plain NativeScript demos. In order to run those execute the following in your shell:
 ```shell
