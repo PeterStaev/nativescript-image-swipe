@@ -27,11 +27,12 @@ export class ImageSwipe extends ImageSwipeBase {
     constructor() {
         super();
 
-        const scrollView: UIScrollView = this.ios as UIScrollView;
-
         this._delegate = UIScrollViewPagedDelegate.initWithOwner(new WeakRef(this));
         this._views = [];
+    }
 
+    public initNativeView() {
+        const scrollView: UIScrollView = this.ios as UIScrollView;
         scrollView.pagingEnabled = true;
         scrollView.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
     }
