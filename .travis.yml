@@ -31,7 +31,7 @@ matrix:
     - stage: lint
       language: node_js
       os: linux
-      node_js: "6"
+      node_js: "8"
       script: grunt lint
 
     - stage: build
@@ -40,7 +40,7 @@ matrix:
       env: 
         - Android="28"
       jdk: oraclejdk8
-      before_install: nvm install 6.10.3
+      before_install: nvm install 8.11.3
       script: "grunt ci:build:android"
 
     - stage: build
@@ -50,7 +50,7 @@ matrix:
         - Xcode="9.4"
       osx_image: xcode9.4
       language: node_js 
-      node_js: "6"
+      node_js: "8"
       jdk: oraclejdk8
       before_install:
         - pip install --upgrade pip
@@ -65,7 +65,7 @@ matrix:
         - Android="28"
         - Platform="Android"
       jdk: oraclejdk8
-      before_install: nvm install 6.10.3
+      before_install: nvm install 8.11.3
       script: "grunt ci:webpack:android"
     
     - stage: webpack
@@ -76,7 +76,7 @@ matrix:
         - Platform="iOS"
       osx_image: xcode9.4
       language: node_js 
-      node_js: "6"
+      node_js: "8"
       jdk: oraclejdk8
       before_install:
         - pip install --upgrade pip
@@ -87,7 +87,7 @@ matrix:
     - stage: deploy
       if: branch = release
       language: node_js 
-      node_js: "6"
+      node_js: "8"
       before_deploy:
           - cd bin/dist
       deploy:
