@@ -124,6 +124,11 @@ class ImageSwipePageChangeListener extends java.lang.Object implements android.s
         if (preloadedImageView) {
             preloadedImageView.reset();
         }
+        
+        preloadedImageView = owner.android.findViewWithTag("Item" + (index + 1).toString()) as ZoomImageView;
+        if (preloadedImageView) {
+            preloadedImageView.reset();
+        }
     }
 
     public onPageScrolled() {
@@ -505,7 +510,6 @@ class OrientationListener extends android.view.OrientationEventListener {
         }
         
         if (zoomImageView && orientationChanged) {
-            // ToDo: Rotate the image based on currentOrientation?
             zoomImageView.reset(true);
         }
     }
