@@ -35,7 +35,6 @@ const ORIENTATION_LANDSCAPE = 1;
 const ORIENTATION_PORTRAIT_REVERSE = 2;
 const ORIENTATION_LANDSCAPE_REVERSE = 3;
 
-
 export * from "./image-swipe-common";
 
 export class ImageSwipe extends ImageSwipeBase {
@@ -489,8 +488,8 @@ class OrientationListener extends android.view.OrientationEventListener {
 
     public onOrientationChanged(orientation: number) {
         const zoomImageView: ZoomImageView = this._zoomImageView.get();
-        var orientationChanged = false;
-        var currentOrientation;
+        let orientationChanged = false;
+        let currentOrientation;
 
         if (orientation <= 45) {
             currentOrientation = ORIENTATION_PORTRAIT;
@@ -504,7 +503,7 @@ class OrientationListener extends android.view.OrientationEventListener {
             currentOrientation = ORIENTATION_PORTRAIT;
         }
         
-        if (currentOrientation != this._previousOrientation) {
+        if (currentOrientation !== this._previousOrientation) {
             this._previousOrientation = currentOrientation;
             orientationChanged = true;
         }
