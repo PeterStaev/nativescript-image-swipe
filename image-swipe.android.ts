@@ -30,10 +30,12 @@ const ALL_GESTURE_TYPES: GestureTypes[] = [
     GestureTypes.tap,
     GestureTypes.touch
 ];
-const ORIENTATION_PORTRAIT = 0;
-const ORIENTATION_LANDSCAPE = 1;
-const ORIENTATION_PORTRAIT_REVERSE = 2;
-const ORIENTATION_LANDSCAPE_REVERSE = 3;
+const enum Orientation {
+    Portrait = 0,
+    Landscape = 1,
+    PortraitReverse = 2,
+    LandscapeReverse = 3,
+}
 
 export * from "./image-swipe-common";
 
@@ -475,13 +477,13 @@ class ZoomImageView extends android.widget.ImageView {
 
 class OrientationListener extends android.view.OrientationEventListener {
     private _zoomImageView: WeakRef<ZoomImageView>;
-    private _previousOrientation: number;
+    private _previousOrientation: Orientation;
 
     constructor(context: android.content.Context, zoomImageView: WeakRef<ZoomImageView>) {
         super(context);
 
         this._zoomImageView = zoomImageView;
-        this._previousOrientation = ORIENTATION_PORTRAIT;
+        this._previousOrientation = Orientation.Portrait;
 
         return __native(this);
     }
@@ -489,25 +491,25 @@ class OrientationListener extends android.view.OrientationEventListener {
     public onOrientationChanged(orientation: number) {
         const zoomImageView: ZoomImageView = this._zoomImageView.get();
         let orientationChanged = false;
-        let currentOrientation;
+        let currentOrientation: Orientation;
 
         if (orientation <= 45) {
-            currentOrientation = ORIENTATION_PORTRAIT;
+            currentOrientation = Orientation.Portrait;
         } else if (orientation <= 135) {
-            currentOrientation = ORIENTATION_LANDSCAPE_REVERSE;
+            currentOrientation = Orientation.LandscapeReverse;
         } else if (orientation <= 225) {
-            currentOrientation = ORIENTATION_PORTRAIT_REVERSE;
+            currentOrientation = Orientation.PortraitReverse;
         } else if (orientation <= 315) {
-            currentOrientation = ORIENTATION_LANDSCAPE;
+            currentOrientation = Orientation.Landscape;
         } else {
-            currentOrientation = ORIENTATION_PORTRAIT;
+            currentOrientation = Orientation.Portrait;
         }
-        
+
         if (currentOrientation !== this._previousOrientation) {
             this._previousOrientation = currentOrientation;
             orientationChanged = true;
         }
-        
+
         if (zoomImageView && orientationChanged) {
             zoomImageView.reset(true);
         }
