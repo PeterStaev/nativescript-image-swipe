@@ -34,7 +34,7 @@ const enum Orientation {
     Portrait = 0,
     Landscape = 1,
     PortraitReverse = 2,
-    LandscapeReverse = 3,
+    LandscapeReverse = 3
 }
 
 export * from "./image-swipe-common";
