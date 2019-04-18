@@ -299,9 +299,12 @@ export class ImageSwipe extends ImageSwipeBase {
         const scrollView: UIScrollView = this.ios;
         const width = utils.layout.toDeviceIndependentPixels(this.getMeasuredWidth());
         const height = utils.layout.toDeviceIndependentPixels(this.getMeasuredHeight());
+        const safeAreaInsets = this.getSafeAreaInsets();
+        const insetAllowance = utils.layout.toDeviceIndependentPixels(safeAreaInsets.left) * 2;
+        const calculatedWidth = width + insetAllowance;
 
-        // console.log(`_calcScrollViewContentSize ${width}, ${height}`);
-        scrollView.contentSize = CGSizeMake(this.items.length * width, height);
+        // console.log(`_calcScrollViewContentSize ${calculatedWidth}, ${height}`);
+        scrollView.contentSize = CGSizeMake(this.items.length * calculatedWidth, height);
     }
 }
 
