@@ -147,7 +147,7 @@ class StateViewPager extends android.support.v4.view.ViewPager {
     constructor(context: android.content.Context) {
         super(context);
 
-        return __native(this);
+        return global.__native(this);
     }
 
     public onInterceptTouchEvent(event: android.view.MotionEvent): boolean {
@@ -279,7 +279,7 @@ class ZoomImageView extends android.widget.ImageView {
         this._orientationChangeListener = new OrientationListener(context, that);
         this._orientationChangeListener.enable();
 
-        return __native(this);
+        return global.__native(this);
     }
 
     public setImageBitmap(image: android.graphics.Bitmap) {
@@ -485,7 +485,7 @@ class OrientationListener extends android.view.OrientationEventListener {
         this._zoomImageView = zoomImageView;
         this._previousOrientation = Orientation.Portrait;
 
-        return __native(this);
+        return global.__native(this);
     }
 
     public onOrientationChanged(orientation: number) {
@@ -528,7 +528,7 @@ class OnCanScrollChangeListener extends java.lang.Object implements OnCanScrollC
 
         this._implementation = implementation;
 
-        return __native(this);
+        return global.__native(this);
     }
 
     public onCanScrollChanged(canScroll: boolean) {
