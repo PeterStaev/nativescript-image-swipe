@@ -74,6 +74,13 @@ export class ImageSwipe extends ImageSwipeBase {
         return this.nativeView;
     }
 
+    public refresh() {
+        this.nativeView.getAdapter().notifyDataSetChanged();
+
+        // Coerce selected index after we have set items to native view.
+        pageNumberProperty.coerce(this);
+    }
+    
     public [allowZoomProperty.setNative](value: boolean) {
         const currentImage = this.nativeView.findViewWithTag("Item" + this.pageNumber) as ZoomImageView;
         if (currentImage) {
@@ -88,10 +95,7 @@ export class ImageSwipe extends ImageSwipeBase {
     }
 
     public [itemsProperty.setNative](value: any) {
-        this.nativeView.getAdapter().notifyDataSetChanged();
-
-        // Coerce selected index after we have set items to native view.
-        pageNumberProperty.coerce(this);
+        this.refresh();
     }
 }
 
@@ -118,14 +122,14 @@ class ImageSwipePageChangeListener extends java.lang.Object implements android.s
         if (!owner.android) {
             return;
         }
-        
+
         let preloadedImageView: ZoomImageView;
 
         preloadedImageView = owner.android.findViewWithTag("Item" + (index - 1).toString()) as ZoomImageView;
         if (preloadedImageView) {
             preloadedImageView.reset();
         }
-        
+
         preloadedImageView = owner.android.findViewWithTag("Item" + (index + 1).toString()) as ZoomImageView;
         if (preloadedImageView) {
             preloadedImageView.reset();
@@ -288,7 +292,7 @@ class ZoomImageView extends android.widget.ImageView {
         this.reset();
     }
 
-    public onTouchEvent(event: android.view.MotionEvent): boolean {       
+    public onTouchEvent(event: android.view.MotionEvent): boolean {
         const owner = this._owner.get();
         if (owner.allowZoom) {
             switch (event.getActionMasked()) {

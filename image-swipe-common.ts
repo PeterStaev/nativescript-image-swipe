@@ -13,16 +13,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ***************************************************************************** */
+import { ObservableArray } from "data/observable-array";
 import { CSSType, CoercibleProperty, Property } from "ui/core/view";
+import { addWeakEventListener, removeWeakEventListener } from "ui/core/weak-event-listener";
 import { Cache } from "ui/image-cache";
 import { ItemsSource } from "ui/list-picker";
 import { ScrollView } from "ui/scroll-view";
+
 import { ImageSwipe as ImageSwipeDefinition } from ".";
 
 export * from "ui/scroll-view";
 
 @CSSType("ImageSwipe")
-export class ImageSwipeBase extends ScrollView implements ImageSwipeDefinition {
+export abstract class ImageSwipeBase extends ScrollView implements ImageSwipeDefinition {
     public static pageChangedEvent: string = "pageChanged";
 
     public static _imageCache: Cache;
@@ -44,6 +47,8 @@ export class ImageSwipeBase extends ScrollView implements ImageSwipeDefinition {
     public _getDataItem(index: number): any {
         return this.isItemsSourceIn ? (this.items as ItemsSource).getItem(index) : this.items[index];
     }
+
+    public abstract refresh(): void;
 }
 
 export const pageNumberProperty = new CoercibleProperty<ImageSwipeBase, number>({
@@ -76,6 +81,16 @@ export const itemsProperty = new Property<ImageSwipeBase, any[] | ItemsSource>({
         const getItem = newValue && (newValue as ItemsSource).getItem;
 
         target.isItemsSourceIn = typeof getItem === "function";
+
+        if (oldValue instanceof ObservableArray) {
+            removeWeakEventListener(oldValue, ObservableArray.changeEvent, target.refresh, target);
+        }
+
+        if (newValue instanceof ObservableArray) {
+            addWeakEventListener(newValue, ObservableArray.changeEvent, target.refresh, target);
+        }
+
+        target.refresh();
     }
 });
 itemsProperty.register(ImageSwipeBase);

@@ -77,7 +77,7 @@ export class ImageSwipe extends ImageSwipeBase {
         }
     }
 
-    public [itemsProperty.setNative](value: any) {
+    public refresh() {
         this._purgeAllPages();
         this._calcScrollViewContentSize();
 
@@ -87,6 +87,10 @@ export class ImageSwipe extends ImageSwipeBase {
         if (this.pageNumber !== undefined && this.pageNumber !== null) {
             this._loadCurrentPage(this.pageNumber);
         }
+    }
+
+    public [itemsProperty.setNative](value: any) {
+        this.refresh();
     }
 
     public [pageNumberProperty.setNative](value: number) {

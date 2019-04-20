@@ -5,11 +5,11 @@
   "repository": "<fill-your-repository-here>",
   "nativescript": {
     "id": "com.tangrainc.imageswipedemo",
-    "tns-android": {
-      "version": "5.2.1"
-    },
     "tns-ios": {
       "version": "5.2.0"
+    },
+    "tns-android": {
+      "version": "5.2.1"
     }
   },
   "scripts": {
