@@ -197,7 +197,6 @@ export class ImageSwipe extends ImageSwipeBase {
             | UIViewAutoresizing.FlexibleHeight
             | UIViewAutoresizing.FlexibleLeftMargin
             | UIViewAutoresizing.FlexibleRightMargin;
-        view.backgroundColor = utils.ios.getter(UIColor, UIColor.blackColor);
 
         zoomScrollView = UIScrollView.alloc().init();
         zoomScrollView.maximumZoomScale = 1;
