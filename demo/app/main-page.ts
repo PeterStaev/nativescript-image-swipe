@@ -18,7 +18,7 @@ export function navigatingTo(args: EventData) {
 
     viewModel = new Observable();
     viewModel.set("items", items);
-    viewModel.set("pageNumber", 0);
+    viewModel.set("pageNumber", 2);
 
     page.bindingContext = viewModel;
 }
