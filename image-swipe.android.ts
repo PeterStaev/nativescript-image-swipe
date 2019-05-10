@@ -75,7 +75,9 @@ export class ImageSwipe extends ImageSwipeBase {
     }
 
     public refresh() {
-        this.nativeView.getAdapter().notifyDataSetChanged();
+        if (this.nativeView) {
+            this.nativeView.getAdapter().notifyDataSetChanged();
+        }
 
         // Coerce selected index after we have set items to native view.
         pageNumberProperty.coerce(this);
