@@ -1,6 +1,6 @@
-import { EventData, Observable } from "data/observable";
-import { ObservableArray } from "data/observable-array";
-import { Page } from "ui/page";
+import { EventData, Observable } from "tns-core-modules/data/observable";
+import { ObservableArray } from "tns-core-modules/data/observable-array";
+import { Page } from "tns-core-modules/ui/page";
 
 import { PageChangeEventData } from "nativescript-image-swipe";
 

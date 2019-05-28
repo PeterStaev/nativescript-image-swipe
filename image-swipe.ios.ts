@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ***************************************************************************** */
-import * as utils from "utils/utils";
+import * as utils from "tns-core-modules/utils/utils";
 import { ImageSwipeBase, allowZoomProperty, itemsProperty, pageNumberProperty } from "./image-swipe-common";
 
 export * from "./image-swipe-common";
@@ -83,7 +83,7 @@ export class ImageSwipe extends ImageSwipeBase {
 
         // Coerce selected index after we have set items to native view.
         pageNumberProperty.coerce(this);
-        
+
         if (this.pageNumber !== undefined && this.pageNumber !== null) {
             this._loadCurrentPage(this.pageNumber);
         }

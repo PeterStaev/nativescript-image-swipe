@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ***************************************************************************** */
-import { GestureTypes } from "ui/gestures";
+import { GestureTypes } from "tns-core-modules/ui/gestures";
 import { ImageSwipeBase, allowZoomProperty, itemsProperty, pageNumberProperty } from "./image-swipe-common";
 
 // These constants specify the mode that we're in
@@ -82,7 +82,7 @@ export class ImageSwipe extends ImageSwipeBase {
         // Coerce selected index after we have set items to native view.
         pageNumberProperty.coerce(this);
     }
-    
+
     public [allowZoomProperty.setNative](value: boolean) {
         const currentImage = this.nativeView.findViewWithTag("Item" + this.pageNumber) as ZoomImageView;
         if (currentImage) {

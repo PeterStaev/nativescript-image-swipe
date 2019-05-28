@@ -13,16 +13,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ***************************************************************************** */
-import { ObservableArray } from "data/observable-array";
-import { CSSType, CoercibleProperty, Property } from "ui/core/view";
-import { addWeakEventListener, removeWeakEventListener } from "ui/core/weak-event-listener";
-import { Cache } from "ui/image-cache";
-import { ItemsSource } from "ui/list-picker";
-import { ScrollView } from "ui/scroll-view";
+import { ObservableArray } from "tns-core-modules/data/observable-array";
+import { CSSType, CoercibleProperty, Property } from "tns-core-modules/ui/core/view";
+import { addWeakEventListener, removeWeakEventListener } from "tns-core-modules/ui/core/weak-event-listener";
+import { Cache } from "tns-core-modules/ui/image-cache";
+import { ItemsSource } from "tns-core-modules/ui/list-picker";
+import { ScrollView } from "tns-core-modules/ui/scroll-view";
 
 import { ImageSwipe as ImageSwipeDefinition } from ".";
 
-export * from "ui/scroll-view";
+export * from "tns-core-modules/ui/scroll-view";
 
 @CSSType("ImageSwipe")
 export abstract class ImageSwipeBase extends ScrollView implements ImageSwipeDefinition {
