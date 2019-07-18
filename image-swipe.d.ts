@@ -1,5 +1,5 @@
 /*! *****************************************************************************
-Copyright (c) 2018 Tangra Inc.
+Copyright (c) 2019 Tangra Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -28,6 +28,8 @@ export class ImageSwipe extends ScrollView {
 
     public ios: any; /* UIScrollView */
     public android: any; /* android.support.v4.view.ViewPager */
+
+    public refresh(): void;
 }
 
 export interface PageChangeEventData extends EventData {

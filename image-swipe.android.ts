@@ -1,5 +1,5 @@
 /*! *****************************************************************************
-Copyright (c) 2018 Tangra Inc.
+Copyright (c) 2019 Tangra Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -30,6 +30,12 @@ const ALL_GESTURE_TYPES: GestureTypes[] = [
     GestureTypes.tap,
     GestureTypes.touch
 ];
+const enum Orientation {
+    Portrait = 0,
+    Landscape = 1,
+    PortraitReverse = 2,
+    LandscapeReverse = 3
+}
 
 export * from "./image-swipe-common";
 
@@ -68,6 +74,15 @@ export class ImageSwipe extends ImageSwipeBase {
         return this.nativeView;
     }
 
+    public refresh() {
+        if (this.nativeView) {
+            this.nativeView.getAdapter().notifyDataSetChanged();
+        }
+
+        // Coerce selected index after we have set items to native view.
+        pageNumberProperty.coerce(this);
+    }
+    
     public [allowZoomProperty.setNative](value: boolean) {
         const currentImage = this.nativeView.findViewWithTag("Item" + this.pageNumber) as ZoomImageView;
         if (currentImage) {
@@ -82,10 +97,7 @@ export class ImageSwipe extends ImageSwipeBase {
     }
 
     public [itemsProperty.setNative](value: any) {
-        this.nativeView.getAdapter().notifyDataSetChanged();
-
-        // Coerce selected index after we have set items to native view.
-        pageNumberProperty.coerce(this);
+        this.refresh();
     }
 }
 
@@ -112,7 +124,7 @@ class ImageSwipePageChangeListener extends java.lang.Object implements androidx.
         if (!owner.android) {
             return;
         }
-        
+
         let preloadedImageView: ZoomImageView;
 
         preloadedImageView = owner.android.findViewWithTag("Item" + (index - 1).toString()) as ZoomImageView;
@@ -141,7 +153,7 @@ class StateViewPager extends androidx.viewpager.widget.ViewPager {
     constructor(context: android.content.Context) {
         super(context);
 
-        return __native(this);
+        return global.__native(this);
     }
 
     public onInterceptTouchEvent(event: android.view.MotionEvent): boolean {
@@ -273,7 +285,7 @@ class ZoomImageView extends android.widget.ImageView {
         this._orientationChangeListener = new OrientationListener(context, that);
         this._orientationChangeListener.enable();
 
-        return __native(this);
+        return global.__native(this);
     }
 
     public setImageBitmap(image: android.graphics.Bitmap) {
@@ -282,7 +294,7 @@ class ZoomImageView extends android.widget.ImageView {
         this.reset();
     }
 
-    public onTouchEvent(event: android.view.MotionEvent): boolean {       
+    public onTouchEvent(event: android.view.MotionEvent): boolean {
         const owner = this._owner.get();
         if (owner.allowZoom) {
             switch (event.getActionMasked()) {
@@ -471,18 +483,40 @@ class ZoomImageView extends android.widget.ImageView {
 
 class OrientationListener extends android.view.OrientationEventListener {
     private _zoomImageView: WeakRef<ZoomImageView>;
+    private _previousOrientation: Orientation;
 
     constructor(context: android.content.Context, zoomImageView: WeakRef<ZoomImageView>) {
         super(context);
 
         this._zoomImageView = zoomImageView;
+        this._previousOrientation = Orientation.Portrait;
 
-        return __native(this);
+        return global.__native(this);
     }
 
     public onOrientationChanged(orientation: number) {
         const zoomImageView: ZoomImageView = this._zoomImageView.get();
-        if (zoomImageView) {
+        let orientationChanged = false;
+        let currentOrientation: Orientation;
+
+        if (orientation <= 45) {
+            currentOrientation = Orientation.Portrait;
+        } else if (orientation <= 135) {
+            currentOrientation = Orientation.LandscapeReverse;
+        } else if (orientation <= 225) {
+            currentOrientation = Orientation.PortraitReverse;
+        } else if (orientation <= 315) {
+            currentOrientation = Orientation.Landscape;
+        } else {
+            currentOrientation = Orientation.Portrait;
+        }
+
+        if (currentOrientation !== this._previousOrientation) {
+            this._previousOrientation = currentOrientation;
+            orientationChanged = true;
+        }
+
+        if (zoomImageView && orientationChanged) {
             zoomImageView.reset(true);
         }
     }
@@ -500,7 +534,7 @@ class OnCanScrollChangeListener extends java.lang.Object implements OnCanScrollC
 
         this._implementation = implementation;
 
-        return __native(this);
+        return global.__native(this);
     }
 
     public onCanScrollChanged(canScroll: boolean) {

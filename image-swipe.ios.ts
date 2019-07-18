@@ -1,5 +1,5 @@
 /*! *****************************************************************************
-Copyright (c) 2018 Tangra Inc.
+Copyright (c) 2019 Tangra Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -27,11 +27,12 @@ export class ImageSwipe extends ImageSwipeBase {
     constructor() {
         super();
 
-        const scrollView: UIScrollView = this.ios as UIScrollView;
-
         this._delegate = UIScrollViewPagedDelegate.initWithOwner(new WeakRef(this));
         this._views = [];
+    }
 
+    public initNativeView() {
+        const scrollView: UIScrollView = this.ios as UIScrollView;
         scrollView.pagingEnabled = true;
         scrollView.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
     }
@@ -76,7 +77,7 @@ export class ImageSwipe extends ImageSwipeBase {
         }
     }
 
-    public [itemsProperty.setNative](value: any) {
+    public refresh() {
         this._purgeAllPages();
         this._calcScrollViewContentSize();
 
@@ -86,6 +87,10 @@ export class ImageSwipe extends ImageSwipeBase {
         if (this.pageNumber !== undefined && this.pageNumber !== null) {
             this._loadCurrentPage(this.pageNumber);
         }
+    }
+
+    public [itemsProperty.setNative](value: any) {
+        this.refresh();
     }
 
     public [pageNumberProperty.setNative](value: number) {
@@ -196,7 +201,6 @@ export class ImageSwipe extends ImageSwipeBase {
             | UIViewAutoresizing.FlexibleHeight
             | UIViewAutoresizing.FlexibleLeftMargin
             | UIViewAutoresizing.FlexibleRightMargin;
-        view.backgroundColor = utils.ios.getter(UIColor, UIColor.blackColor);
 
         zoomScrollView = UIScrollView.alloc().init();
         zoomScrollView.maximumZoomScale = 1;
@@ -298,9 +302,12 @@ export class ImageSwipe extends ImageSwipeBase {
         const scrollView: UIScrollView = this.ios;
         const width = utils.layout.toDeviceIndependentPixels(this.getMeasuredWidth());
         const height = utils.layout.toDeviceIndependentPixels(this.getMeasuredHeight());
+        const safeAreaInsets = this.getSafeAreaInsets();
+        const insetAllowance = utils.layout.toDeviceIndependentPixels(safeAreaInsets.left + safeAreaInsets.right);
+        const calculatedWidth = width + insetAllowance;
 
-        // console.log(`_calcScrollViewContentSize ${width}, ${height}`);
-        scrollView.contentSize = CGSizeMake(this.items.length * width, height);
+        // console.log(`_calcScrollViewContentSize ${calculatedWidth}, ${height}`);
+        scrollView.contentSize = CGSizeMake(this.items.length * calculatedWidth, height);
     }
 }
 
