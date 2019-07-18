@@ -89,8 +89,8 @@ export class ImageSwipe extends ImageSwipeBase {
     }
 }
 
-@Interfaces([android.support.v4.view.ViewPager.OnPageChangeListener])
-class ImageSwipePageChangeListener extends java.lang.Object implements android.support.v4.view.ViewPager.OnPageChangeListener {
+@Interfaces([androidx.viewpager.widget.ViewPager.OnPageChangeListener])
+class ImageSwipePageChangeListener extends java.lang.Object implements androidx.viewpager.widget.ViewPager.OnPageChangeListener {
     constructor(private owner: WeakRef<ImageSwipe>) {
         super();
 
@@ -135,7 +135,7 @@ class ImageSwipePageChangeListener extends java.lang.Object implements android.s
     }
 }
 
-class StateViewPager extends android.support.v4.view.ViewPager {
+class StateViewPager extends androidx.viewpager.widget.ViewPager {
     private _allowScrollIn: boolean = true;
 
     constructor(context: android.content.Context) {
@@ -157,7 +157,7 @@ class StateViewPager extends android.support.v4.view.ViewPager {
     }
 }
 
-class ImageSwipePageAdapter extends android.support.v4.view.PagerAdapter {
+class ImageSwipePageAdapter extends androidx.viewpager.widget.PagerAdapter {
     constructor(private owner: WeakRef<ImageSwipe>) {
         super();
 
@@ -167,7 +167,7 @@ class ImageSwipePageAdapter extends android.support.v4.view.PagerAdapter {
     public instantiateItem(container: android.view.ViewGroup, position: number): java.lang.Object {
         const owner = this.owner.get();
         const imageUrl = owner._getDataItem(position)[owner.imageUrlProperty];
-        const params = new android.support.v4.view.ViewPager.LayoutParams();
+        const params = new androidx.viewpager.widget.ViewPager.LayoutParams();
         params.height = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
         params.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
