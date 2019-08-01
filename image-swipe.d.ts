@@ -13,10 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ***************************************************************************** */
-import { EventData } from "data/observable";
-import { CoercibleProperty, Property } from "ui/core/view";
-import { ItemsSource } from "ui/list-picker";
-import { ScrollView } from "ui/scroll-view";
+import { EventData } from "tns-core-modules/data/observable";
+import { CoercibleProperty, Property } from "tns-core-modules/ui/core/view";
+import { ItemsSource } from "tns-core-modules/ui/list-picker";
+import { ScrollView } from "tns-core-modules/ui/scroll-view";
 
 export class ImageSwipe extends ScrollView {
     public static pageChangedEvent: string;
