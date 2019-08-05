@@ -1,12 +1,12 @@
-import { EventData, Observable } from "data/observable";
-import { ObservableArray } from "data/observable-array";
-import { Page } from "ui/page";
+import { EventData, Observable } from "tns-core-modules/data/observable";
+import { ObservableArray } from "tns-core-modules/data/observable-array";
+import { Page } from "tns-core-modules/ui/page";
 
 import { PageChangeEventData } from "nativescript-image-swipe";
 
 let viewModel: Observable;
 
-export function navigatingTo(args: EventData) {
+export function pageLoaded(args: EventData) {
     const page = args.object as Page;
     const items = new ObservableArray();
 

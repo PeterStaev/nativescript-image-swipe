@@ -1,4 +1,14 @@
-**This repo only supports NativeScript pre-6.0. The latest version of the plugin supporting NS 6+ is availble as part of [ProPlugins](https://proplugins.org).**
+# Contribution - help wanted
+This plugin is supported by the NativeScript community. All PRs are welcome but make sure that the demo applications work correctly before creating a new PR. If you do not have an issue you are facing but want to contribute to this plugin you can find a list of the on going issues [here](https://github.com/PeterStaev/nativescript-image-swipe/issues).
+
+## Creating a PR checklist:
+- Fork the repo
+- Add new functionality or fix an issue and push it to your fork
+- Start both demo and demo-ng apps and make sure they work correctly (make sure that no console errors are thrown on both iOS and Android)
+- From your fork create a PR targeting the 'master' branch of this repository
+
+Thank you for your contribution.
+
 # NativeScript Image Swipe widget 
 [![Build Status](https://travis-ci.org/PeterStaev/nativescript-image-swipe.svg?branch=master)](https://travis-ci.org/PeterStaev/nativescript-image-swipe)
 [![npm downloads](https://img.shields.io/npm/dm/nativescript-image-swipe.svg)](https://www.npmjs.com/package/nativescript-image-swipe)

@@ -32,18 +32,18 @@ export class ImageSwipe extends ImageSwipeBase {
     }
 
     public initNativeView() {
-        const scrollView: UIScrollView = this.ios as UIScrollView;
+        const scrollView: UIScrollView = this.nativeViewProtected as UIScrollView;
         scrollView.pagingEnabled = true;
         scrollView.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
     }
 
     public onLoaded() {
         super.onLoaded();
-        (this.ios as UIScrollView).delegate = this._delegate;
+        (this.nativeViewProtected as UIScrollView).delegate = this._delegate;
     }
 
     public onUnloaded() {
-        (this.ios as UIScrollView).delegate = null;
+        (this.nativeViewProtected as UIScrollView).delegate = null;
         this._purgeAllPages();
         super.onUnloaded();
     }
@@ -53,7 +53,7 @@ export class ImageSwipe extends ImageSwipeBase {
         super.onLayout(left, top, right, bottom);
 
         if (this.items && this.items.length > 0) {
-            const scrollView: UIScrollView = this.ios;
+            const scrollView: UIScrollView = this.nativeViewProtected;
 
             this._calcScrollViewContentSize();
 
@@ -131,7 +131,7 @@ export class ImageSwipe extends ImageSwipeBase {
     }
 
     private _loadCurrentPage(page: number) {
-        const scrollView: UIScrollView = this.ios;
+        const scrollView: UIScrollView = this.nativeViewProtected;
         const pageWidth = scrollView.frame.size.width;
 
         if (!this.isScrollingIn) {
@@ -165,7 +165,7 @@ export class ImageSwipe extends ImageSwipeBase {
             return;
         }
 
-        const scrollView: UIScrollView = this.ios;
+        const scrollView: UIScrollView = this.nativeViewProtected;
         const frame = scrollView.bounds;
         const view = this._views[page].view;
 
@@ -188,7 +188,7 @@ export class ImageSwipe extends ImageSwipeBase {
             return;
         }
 
-        const scrollView: UIScrollView = this.ios;
+        const scrollView: UIScrollView = this.nativeViewProtected;
         const imageUrl = this._getDataItem(page)[this.imageUrlProperty];
         let imageView: UIImageView;
         let activityIndicator: UIActivityIndicatorView;
@@ -299,14 +299,13 @@ export class ImageSwipe extends ImageSwipeBase {
     }
 
     private _calcScrollViewContentSize() {
-        const scrollView: UIScrollView = this.ios;
+        const scrollView: UIScrollView = this.nativeViewProtected;
         const width = utils.layout.toDeviceIndependentPixels(this.getMeasuredWidth());
         const height = utils.layout.toDeviceIndependentPixels(this.getMeasuredHeight());
         const safeAreaInsets = this.getSafeAreaInsets();
         const insetAllowance = utils.layout.toDeviceIndependentPixels(safeAreaInsets.left + safeAreaInsets.right);
         const calculatedWidth = width + insetAllowance;
 
-        // console.log(`_calcScrollViewContentSize ${calculatedWidth}, ${height}`);
         scrollView.contentSize = CGSizeMake(this.items.length * calculatedWidth, height);
     }
 }
