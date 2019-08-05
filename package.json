@@ -51,9 +51,9 @@
     "grunt-contrib-clean": "1.0.0",
     "grunt-contrib-copy": "1.0.0",
     "grunt-exec": "2.0.0",
-    "tns-core-modules": "~5.0.0",
-    "tns-platform-declarations": "~5.0.0",
+    "tns-core-modules": "~6.0.5",
+    "tns-platform-declarations": "~6.0.5",
     "tslint": "5.2.0",
-    "typescript": "^2.6.2"
+    "typescript": "^3.5.3"
   }
 }
