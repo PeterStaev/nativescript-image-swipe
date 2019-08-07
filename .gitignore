@@ -59,7 +59,6 @@ hooks
 *.log
 report
 .tmp_backup
-!webpack.*.js
 
 # Migration backups
 .migration_backup
