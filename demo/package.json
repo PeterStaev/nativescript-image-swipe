@@ -6,10 +6,10 @@
   "nativescript": {
     "id": "com.tangrainc.imageswipedemo",
     "tns-ios": {
-      "version": "5.2.0"
+      "version": "6.0.1"
     },
     "tns-android": {
-      "version": "5.2.1"
+      "version": "6.0.0"
     }
   },
   "scripts": {
@@ -19,7 +19,7 @@
   "dependencies": {
     "nativescript-image-swipe": "file:../bin/dist",
     "nativescript-theme-core": "^1.0.4",
-    "tns-core-modules": "~5.2.2"
+    "tns-core-modules": "6.0.1"
   },
   "devDependencies": {
     "babel-traverse": "6.24.1",
@@ -28,8 +28,7 @@
     "extract-text-webpack-plugin": "~3.0.2",
     "lazy": "1.0.11",
     "nativescript-css-loader": "~0.26.0",
-    "nativescript-dev-typescript": "^0.9.0",
-    "nativescript-dev-webpack": "^0.21.1",
-    "typescript": "~3.1.0"
+    "nativescript-dev-webpack": "1.0.1",
+    "typescript": "3.4.5"
   }
 }

@@ -121,18 +121,18 @@ class ImageSwipePageChangeListener extends java.lang.Object implements androidx.
         });
 
         // For Angular it happens that this is triggered before the native view is initialized
-        if (!owner.android) {
+        if (!owner.nativeViewProtected) {
             return;
         }
 
         let preloadedImageView: ZoomImageView;
 
-        preloadedImageView = owner.android.findViewWithTag("Item" + (index - 1).toString()) as ZoomImageView;
+        preloadedImageView = owner.nativeViewProtected.findViewWithTag("Item" + (index - 1).toString()) as ZoomImageView;
         if (preloadedImageView) {
             preloadedImageView.reset();
         }
 
-        preloadedImageView = owner.android.findViewWithTag("Item" + (index + 1).toString()) as ZoomImageView;
+        preloadedImageView = owner.nativeViewProtected.findViewWithTag("Item" + (index + 1).toString()) as ZoomImageView;
         if (preloadedImageView) {
             preloadedImageView.reset();
         }
@@ -190,7 +190,7 @@ class ImageSwipePageAdapter extends androidx.viewpager.widget.PagerAdapter {
         const that = new WeakRef(owner);
         imageView.setOnCanScrollChangeListener(new OnCanScrollChangeListener({
             onCanScrollChanged: (canScroll: boolean) => {
-                that.get().android.setAllowScrollIn(canScroll);
+                that.get().nativeViewProtected.setAllowScrollIn(canScroll);
             }
         }));
 
