@@ -89,8 +89,6 @@ export const itemsProperty = new Property<ImageSwipeBase, any[] | ItemsSource>({
         if (newValue instanceof ObservableArray) {
             addWeakEventListener(newValue, ObservableArray.changeEvent, target.refresh, target);
         }
-
-        target.refresh();
     }
 });
 itemsProperty.register(ImageSwipeBase);
