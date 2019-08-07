@@ -83,7 +83,7 @@ export class ImageSwipe extends ImageSwipeBase {
 
         // Coerce selected index after we have set items to native view.
         pageNumberProperty.coerce(this);
-        
+
         if (this.pageNumber !== undefined && this.pageNumber !== null) {
             this._loadCurrentPage(this.pageNumber);
         }
@@ -132,27 +132,29 @@ export class ImageSwipe extends ImageSwipeBase {
 
     private _loadCurrentPage(page: number) {
         const scrollView: UIScrollView = this.nativeViewProtected;
-        const pageWidth = scrollView.frame.size.width;
+        if (scrollView) {
+            const pageWidth = scrollView.frame.size.width;
 
-        if (!this.isScrollingIn) {
-            scrollView.contentOffset = CGPointMake(page * pageWidth, 0);
-        }
+            if (!this.isScrollingIn) {
+                scrollView.contentOffset = CGPointMake(page * pageWidth, 0);
+            }
 
-        for (let loop = 0; loop < page - 1; loop++) {
-            this._purgePage(loop);
-        }
+            for (let loop = 0; loop < page - 1; loop++) {
+                this._purgePage(loop);
+            }
 
-        // Load current page and one ahead one behind for caching purposes
-        this._loadPage(page); // Always load the current page first
-        if (page - 1 >= 0) {
-            this._loadPage(page - 1);
-        }
-        if (page + 1 < this.items.length) {
-            this._loadPage(page + 1);
-        }
+            // Load current page and one ahead one behind for caching purposes
+            this._loadPage(page); // Always load the current page first
+            if (page - 1 >= 0) {
+                this._loadPage(page - 1);
+            }
+            if (page + 1 < this.items.length) {
+                this._loadPage(page + 1);
+            }
 
-        for (let loop = page + 2; loop < this.items.length; loop++) {
-            this._purgePage(loop);
+            for (let loop = page + 2; loop < this.items.length; loop++) {
+                this._purgePage(loop);
+            }
         }
     }
 
@@ -300,13 +302,15 @@ export class ImageSwipe extends ImageSwipeBase {
 
     private _calcScrollViewContentSize() {
         const scrollView: UIScrollView = this.nativeViewProtected;
-        const width = utils.layout.toDeviceIndependentPixels(this.getMeasuredWidth());
-        const height = utils.layout.toDeviceIndependentPixels(this.getMeasuredHeight());
-        const safeAreaInsets = this.getSafeAreaInsets();
-        const insetAllowance = utils.layout.toDeviceIndependentPixels(safeAreaInsets.left + safeAreaInsets.right);
-        const calculatedWidth = width + insetAllowance;
+        if (scrollView) {
+            const width = utils.layout.toDeviceIndependentPixels(this.getMeasuredWidth());
+            const height = utils.layout.toDeviceIndependentPixels(this.getMeasuredHeight());
+            const safeAreaInsets = this.getSafeAreaInsets();
+            const insetAllowance = utils.layout.toDeviceIndependentPixels(safeAreaInsets.left + safeAreaInsets.right);
+            const calculatedWidth = width + insetAllowance;
 
-        scrollView.contentSize = CGSizeMake(this.items.length * calculatedWidth, height);
+            scrollView.contentSize = CGSizeMake(this.items.length * calculatedWidth, height);
+        }
     }
 }
 
