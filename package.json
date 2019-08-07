@@ -1,6 +1,6 @@
 {
   "name": "nativescript-image-swipe",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "A widget to easily swipe and zoom through images",
   "main": "image-swipe",
   "typings": "image-swipe.d.ts",
