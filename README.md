@@ -1,3 +1,5 @@
+__The author of this plugin will continue to support it in a separate repo exclusively as part of [ProPlugins](https://proplugins.org). This repo will remain supported by the NativeScript community.__
+
 # Contribution - help wanted
 This plugin is supported by the NativeScript community. All PRs are welcome but make sure that the demo applications work correctly before creating a new PR. If you do not have an issue you are facing but want to contribute to this plugin you can find a list of the on going issues [here](https://github.com/PeterStaev/nativescript-image-swipe/issues).
 
